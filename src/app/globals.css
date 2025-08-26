@@ -7,7 +7,7 @@
   --secondary-background: rgb(248, 235, 208);
   --main-foreground: oklch(0% 0 0);
   --main: oklch(80.516% 0.10585 97.423);
-  --border: oklch(27.008% 0.01003 80.608);
+  --border: oklch(70.146% 0.00374 38.518);
   --ring: oklch(0.709 0.01 56.259);
   --overlay: oklch(0% 0 0 / 0.8);
   --shadow: 4px 4px 0px 0px var(--border);
@@ -18,14 +18,12 @@
   --chart-5: oklch(0.769 0.188 70.08);
   --chart-active-dot: #000;
   --radius: 0.625rem;
-  --background: oklch(89.609% 0.0509 85.697);
-  --foreground: oklch(27.008% 0.01003 80.608);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.147 0.004 49.25);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.147 0.004 49.25);
   --primary: oklch(0.216 0.006 56.043);
-  --primary-foreground: oklch(0% 0 0);
+  --primary-foreground: oklch(0.985 0.001 106.423);
   --secondary: oklch(0.97 0.001 106.424);
   --secondary-foreground: oklch(0.216 0.006 56.043);
   --muted: oklch(0.97 0.001 106.424);
@@ -36,21 +34,24 @@
   --input: oklch(0.923 0.003 48.717);
   --sidebar: oklch(0.985 0.001 106.423);
   --sidebar-foreground: oklch(0.147 0.004 49.25);
-  --sidebar-primary: oklch(22.361% 0.00491 67.46);
-  --sidebar-primary-foreground: oklch(48.193% 0.00005 271.152);
+  --sidebar-primary: oklch(0.216 0.006 56.043);
+  --sidebar-primary-foreground: oklch(0.985 0.001 106.423);
   --sidebar-accent: oklch(0.97 0.001 106.424);
   --sidebar-accent-foreground: oklch(0.216 0.006 56.043);
   --sidebar-border: oklch(0.923 0.003 48.717);
   --sidebar-ring: oklch(0.709 0.01 56.259);
+  --background: oklch(87.466% 0.07624 86.296);
+  --foreground: oklch(0.147 0.004 49.25);
+  --alegreya-sc-black: 'Alegreya SC', serif, 900, normal;
 }
 
 .dark {
-  --background: oklch(27.008% 0.01003 80.608);
+  --background: oklch(0.147 0.004 49.25);
   --secondary-background: oklch(23.93% 0 0);
-  --foreground: oklch(89.609% 0.0509 85.697);
+  --foreground: oklch(0.985 0.001 106.423);
   --main-foreground: oklch(94.912% 0.00011 271.152);
   --main: oklch(33.162% 0.03009 97.125);
-  --border: oklch(80.516% 0.10585 97.423);
+  --border: oklch(1 0 0 / 10%);
   --ring: oklch(0.553 0.013 58.071);
   --shadow: 4px 4px 0px 0px var(--border);
   --chart-1: oklch(0.488 0.243 264.376);
@@ -132,4 +133,13 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }
