@@ -5,7 +5,7 @@ import { Label } from '../ui/label'
 import { FormEvent } from 'react'
 import { redirect } from 'next/navigation'
 
-export default function LoginForm() {
+export default function SignInForm() {
   async function login(e: FormEvent<HTMLFormElement>) {
     const formData = new FormData(e.currentTarget)
 

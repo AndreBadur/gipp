@@ -1,0 +1,3 @@
+[] - Corrigir acesso do google provider
+[] - Alterar formulário de cadastro de informações do proprietário, dessa forma,
+     retira-se a dependência das informações do usuário (email, senha) com as informações do proprietário (dados pessoais ou jurídico)
