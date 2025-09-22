@@ -1,4 +1,4 @@
-import { useMask } from '@react-input/mask'
+import { redirect } from 'next/navigation'
 
 export function validarSenha(senha: string, confirmaSenha: string): string {
   if (!senha || senha.length < 8) {
@@ -118,4 +118,11 @@ function validCalc(x: number, numbers: number[]) {
 function matchNumbers(value: string | number | number[] = '') {
   const match = value.toString().match(/\d/g)
   return Array.isArray(match) ? match.map(Number) : []
+}
+
+export function redirectSignIn() {
+  redirect('/sign/in')
+}
+export function redirectSignUp() {
+  redirect('/sign/up')
 }

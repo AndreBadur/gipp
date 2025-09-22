@@ -1,3 +1,5 @@
+'use client'
+
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
@@ -44,8 +46,7 @@ export default function CadastroDeProprietarioForm() {
 
   return (
     <form
-      className={` bg-secondary-background h-auto w-[90%] p-1 rounded-lg 
-         md:w-[45%]`}
+      className={`bg-secondary-background h-auto w-full p-1 rounded-lg`}
       onSubmit={validateAndRegister}
     >
       <div className={`w-full h-auto`}>

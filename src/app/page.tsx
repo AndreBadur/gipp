@@ -1,20 +1,13 @@
 'use client'
 
+import LogoButton from '@/components/project/LogoButton'
 import { Button } from '@/components/ui/button'
-import { redirect } from 'next/navigation'
+import { redirectSignIn, redirectSignUp } from './frontend/lib/tools'
 
 export default function Home() {
-  function redirectSignIn() {
-    redirect('/sign/in')
-  }
-
-  function redirectSignUp() {
-    redirect('/sign/up')
-  }
-
   return (
     <div className="flex flex-col justify-center items-center h-screen w-screen">
-      <p className="font-black text-7xl">G.I.P.P.</p>
+      <LogoButton />
       <p className="font-black text-4xl m-2">
         Gerenciamento Integrado de Propriedades Produtivas
       </p>
