@@ -2,6 +2,7 @@ import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import FacebookProvider from 'next-auth/providers/facebook'
+import { autenticarUsuario } from '@/app/frontend/use-cases/UsuarioCases'
 
 const handler = NextAuth({
   pages: {
@@ -17,29 +18,28 @@ const handler = NextAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
     }),
     CredentialsProvider({
-      name: 'Credentials',
-
+      name: 'credentials',
       credentials: {
         email: {
-          label: 'Email',
+          label: 'email',
           type: 'email',
         },
-        password: { label: 'Password', type: 'password' },
+        senha: {
+          label: 'password',
+          type: 'password',
+        },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
         if (!credentials) {
-          console.log(credentials)
+          console.log('missing credentials')
           return null
         }
 
-        const res = await fetch('/your/endpoint', {
-          method: 'POST',
-          body: JSON.stringify(credentials),
-          headers: { 'Content-Type': 'application/json' },
-        })
-        const user = await res.json()
+        const { email, senha } = credentials
 
-        if (res.ok && user) {
+        const res = await autenticarUsuario(email, senha)
+        const user = JSON.parse(res.data)
+        if (res.success) {
           return user
         }
 

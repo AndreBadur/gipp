@@ -1,9 +1,101 @@
-const handler = () => {
-  return new Response(
-    JSON.stringify({
-      message: 'Escopo de mensagem Response',
-    }),
-    { status: 200 }
-  )
+import { UsuarioService } from '@/app/backend/classes/UsuarioService'
+import { NextResponse } from 'next/server'
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+type AnyClass<T = any> = new (...args: any[]) => T
+const classes: Record<string, AnyClass> = {
+  UsuarioService,
+  //TodosOsServices
 }
-export { handler as GET, handler as POST }
+
+export async function POST(req: Request) {
+  const { class: className, method, payload } = await req.json()
+
+  try {
+    const ServiceClass = classes[className]
+    if (!ServiceClass) {
+      return NextResponse.json(
+        { success: false, message: `Classe '${className}' não encontrada.` },
+        { status: 400 }
+      )
+    }
+
+    const instance = new ServiceClass()
+
+    if (typeof instance[method] !== 'function') {
+      return NextResponse.json(
+        {
+          success: false,
+          message: `Método '${method}' não existe em '${className}'.`,
+        },
+        { status: 400 }
+      )
+    }
+
+    const result = await instance[method](
+      ...(Array.isArray(payload) ? payload : [payload])
+    )
+
+    return NextResponse.json({ success: true, data: result, status: 202 })
+  } catch (error) {
+    return NextResponse.json({ success: false, data: error, status: 500 })
+  }
+}
+
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url)
+
+    const className = searchParams.get('class')
+    const method = searchParams.get('method')
+
+    if (!className || !method) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Parâmetros 'class' e 'method' são obrigatórios.",
+        },
+        { status: 400 }
+      )
+    }
+
+    const payload: Record<string, any> = {}
+    searchParams.forEach((value, key) => {
+      if (key !== 'class' && key !== 'method') {
+        payload[key] = value
+      }
+    })
+
+    console.log(payload)
+
+    const ServiceClass = classes[className]
+    if (!ServiceClass) {
+      return NextResponse.json(
+        { success: false, message: `Classe '${className}' não encontrada.` },
+        { status: 400 }
+      )
+    }
+
+    const instance = new ServiceClass()
+
+    if (typeof instance[method] !== 'function') {
+      return NextResponse.json(
+        {
+          success: false,
+          message: `Método '${method}' não existe em '${className}'.`,
+        },
+        { status: 400 }
+      )
+    }
+
+    const result = await instance[method](payload)
+    console.log(`ROUTE HANDLER RESULT: ${JSON.stringify(result)}`)
+
+    return NextResponse.json({ success: true, data: result })
+  } catch (error: any) {
+    return NextResponse.json(
+      { success: false, message: error.message },
+      { status: 500 }
+    )
+  }
+}

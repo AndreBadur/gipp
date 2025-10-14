@@ -5,6 +5,7 @@ import { Label } from '../ui/label'
 import { FormEvent, useState } from 'react'
 import { redirectSignIn, validarSenha } from '@/app/frontend/lib/tools'
 import { useMask } from '@react-input/mask'
+import { criarUsuario } from '@/app/frontend/use-cases/UsuarioCases'
 
 export default function SignUpForm() {
   const [error, setError] = useState<string>('')
@@ -25,8 +26,8 @@ export default function SignUpForm() {
 
     setError(validarSenha(senha, confirmaSenha))
 
-    const data = { email, telefone, senha, confirmaSenha }
-    console.log('Dados enviados:', data)
+    const log = await criarUsuario(email, telefone, senha)
+    console.log(log)
   }
 
   function loginFacebook() {

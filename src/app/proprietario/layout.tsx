@@ -1,13 +1,13 @@
 import { redirect } from 'next/navigation'
-import useGetServerSession from '../frontend/lib/useGetServerSession'
 import LogoutButton from '@/components/project/LogoutButton'
+import { getServerSession } from 'next-auth'
 
 export default async function Layout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const { session } = await useGetServerSession()
+  const session = await getServerSession()
 
   if (!session) {
     redirect('/')

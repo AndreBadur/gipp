@@ -12,7 +12,7 @@ export default function SignInForm() {
 
     const data = {
       email: formData.get('email'),
-      senha: formData.get('password'),
+      senha: formData.get('senha'),
     }
 
     signIn('credentials', {
@@ -52,11 +52,11 @@ export default function SignInForm() {
               ></Input>
             </div>
             <div>
-              <Label htmlFor="password">Senha</Label>
+              <Label htmlFor="senha">Senha</Label>
               <Input
                 type="password"
-                id="password"
-                name="password"
+                id="senha"
+                name="senha"
                 placeholder="Senha"
               ></Input>
             </div>

@@ -126,3 +126,10 @@ export function redirectSignIn() {
 export function redirectSignUp() {
   redirect('/sign/up')
 }
+
+export function verifyApiResponse(response: Response) {
+  if (response.ok) {
+    return true
+  }
+  throw Error
+}
