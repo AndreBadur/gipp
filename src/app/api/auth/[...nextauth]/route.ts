@@ -6,7 +6,7 @@ import { autenticarUsuario } from '@/app/frontend/use-cases/UsuarioCases'
 
 const handler = NextAuth({
   pages: {
-    signIn: '/',
+    signIn: '/sign/in',
   },
   providers: [
     FacebookProvider({
@@ -38,11 +38,17 @@ const handler = NextAuth({
         const { email, senha } = credentials
 
         const res = await autenticarUsuario(email, senha)
-        const user = JSON.parse(res.data)
-        if (res.success) {
-          return user
+        // const user = await res.json()
+        console.log('user no nextauth: ', res)
+        if (res?.success && res.data.status == 200) {
+          console.log('estou dentro do if')
+          return {
+            id: res.data.user.id.toString(),
+            email: res.data.user.email,
+            telefone: res.data.user.telefone,
+          }
         }
-
+        console.log('estou fora do if')
         return null
       },
     }),

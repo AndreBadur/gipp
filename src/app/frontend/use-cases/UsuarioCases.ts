@@ -1,8 +1,20 @@
 'use server'
 
+import { IUsuario } from '@/app/backend/services/UsuarioService'
 import { verifyApiResponse } from '../lib/tools'
 
-export async function autenticarUsuario(email: string, senha: string) {
+interface IUserResponse {
+  success: boolean
+  data: {
+    user: IUsuario
+    status: number
+  }
+}
+
+export async function autenticarUsuario(
+  email: string,
+  senha: string
+): Promise<IUserResponse | undefined> {
   try {
     const response = await fetch(
       `http://localhost:3000/api/routeHandler?class=UsuarioService&method=buscarUsuarioPorEmail&email=${email}&senha=${senha}`,
@@ -48,7 +60,7 @@ export async function criarUsuario(
 export async function deletarUsuario(email: string) {
   try {
     const response = await fetch('http://localhost:3000/api/routeHandler', {
-      method: 'POST',
+      method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
       },

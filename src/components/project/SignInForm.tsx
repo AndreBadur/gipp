@@ -48,7 +48,7 @@ export default function SignInForm() {
                 type="email"
                 id="email"
                 name="email"
-                placeholder="Email"
+                placeholder="email@domínio.com"
               ></Input>
             </div>
             <div>

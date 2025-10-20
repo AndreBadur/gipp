@@ -1,11 +1,12 @@
-import { UsuarioService } from '@/app/backend/classes/UsuarioService'
+import { ProprietarioService } from '@/app/backend/services/ProprietarioService'
+import { UsuarioService } from '@/app/backend/services/UsuarioService'
 import { NextResponse } from 'next/server'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type AnyClass<T = any> = new (...args: any[]) => T
 const classes: Record<string, AnyClass> = {
   UsuarioService,
-  //TodosOsServices
+  ProprietarioService,
 }
 
 export async function POST(req: Request) {
@@ -66,8 +67,6 @@ export async function GET(req: Request) {
       }
     })
 
-    console.log(payload)
-
     const ServiceClass = classes[className]
     if (!ServiceClass) {
       return NextResponse.json(
@@ -97,5 +96,73 @@ export async function GET(req: Request) {
       { success: false, message: error.message },
       { status: 500 }
     )
+  }
+}
+
+export async function PATCH(req: Request) {
+  const { class: className, method, payload } = await req.json()
+
+  try {
+    const ServiceClass = classes[className]
+    if (!ServiceClass) {
+      return NextResponse.json(
+        { success: false, message: `Classe '${className}' não encontrada.` },
+        { status: 400 }
+      )
+    }
+
+    const instance = new ServiceClass()
+
+    if (typeof instance[method] !== 'function') {
+      return NextResponse.json(
+        {
+          success: false,
+          message: `Método '${method}' não existe em '${className}'.`,
+        },
+        { status: 400 }
+      )
+    }
+
+    const result = await instance[method](
+      ...(Array.isArray(payload) ? payload : [payload])
+    )
+
+    return NextResponse.json({ success: true, data: result, status: 202 })
+  } catch (error) {
+    return NextResponse.json({ success: false, data: error, status: 500 })
+  }
+}
+
+export async function DELETE(req: Request) {
+  const { class: className, method, payload } = await req.json()
+
+  try {
+    const ServiceClass = classes[className]
+    if (!ServiceClass) {
+      return NextResponse.json(
+        { success: false, message: `Classe '${className}' não encontrada.` },
+        { status: 400 }
+      )
+    }
+
+    const instance = new ServiceClass()
+
+    if (typeof instance[method] !== 'function') {
+      return NextResponse.json(
+        {
+          success: false,
+          message: `Método '${method}' não existe em '${className}'.`,
+        },
+        { status: 400 }
+      )
+    }
+
+    const result = await instance[method](
+      ...(Array.isArray(payload) ? payload : [payload])
+    )
+
+    return NextResponse.json({ success: true, data: result, status: 200 })
+  } catch (error) {
+    return NextResponse.json({ success: false, data: error, status: 500 })
   }
 }

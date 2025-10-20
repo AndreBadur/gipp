@@ -14,7 +14,7 @@ export function validarSenha(senha: string, confirmaSenha: string): string {
   return ''
 }
 
-export function validarCpf(cpf: string) {
+export function validarCPF(cpf: string) {
   let soma
   let resto
   soma = 0
@@ -51,7 +51,7 @@ export function validarCpf(cpf: string) {
 
 export const regexCNPJ = /^\d{2}.\d{3}.\d{3}\/\d{4}-\d{2}$/
 
-export function validCNPJ(value: string | number | number[] = '') {
+export function validarCNPJ(value: string | number | number[] = '') {
   if (!value) return false
 
   const isString = typeof value === 'string'
@@ -76,15 +76,15 @@ export function validCNPJ(value: string | number | number[] = '') {
 
   const digits = numbers.slice(12)
 
-  const digit0 = validCalc(12, numbers)
+  const digit0 = validarCalc(12, numbers)
   if (digit0 !== digits[0]) return false
 
-  const digit1 = validCalc(13, numbers)
+  const digit1 = validarCalc(13, numbers)
   return digit1 === digits[1]
 }
 
 export function formatCNPJ(value: string | number | number[] = '') {
-  const valid = validCNPJ(value)
+  const valid = validarCNPJ(value)
 
   if (!valid) return ''
 
@@ -99,7 +99,7 @@ export function formatCNPJ(value: string | number | number[] = '') {
   return format
 }
 
-function validCalc(x: number, numbers: number[]) {
+function validarCalc(x: number, numbers: number[]) {
   const slice = numbers.slice(0, x)
   let factor = x - 7
   let sum = 0
@@ -126,10 +126,31 @@ export function redirectSignIn() {
 export function redirectSignUp() {
   redirect('/sign/up')
 }
+export function redirectHome() {
+  redirect('/')
+}
 
 export function verifyApiResponse(response: Response) {
   if (response.ok) {
     return true
   }
   throw Error
+}
+
+export function outFormatCPF(cpf: string): string {
+  return cpf
+    .replace(/\D/g, '')
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d)/, '$1.$2')
+    .replace(/(\d{3})(\d{1,2})$/, '$1-$2')
+}
+
+export function outFormatCNPJ(cnpj: string): string {
+  return cnpj
+    .replace(/\D/g, '')
+    .replace(/^(\d{2})(\d)/, '$1.$2')
+    .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+    .replace(/\.(\d{3})(\d)/, '.$1/$2')
+    .replace(/(\d{4})(\d{2})$/, '$1-$2')
+    .slice(0, 18)
 }

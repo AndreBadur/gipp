@@ -4,7 +4,7 @@ import { PrismaClient } from '@/generated/prisma'
 
 const prisma = new PrismaClient()
 
-interface IUsuario {
+export interface IUsuario {
   id: number
   email: string
   senha: string
@@ -27,7 +27,7 @@ export class UsuarioService {
 
       isDataNullOrUndefined(user)
       console.log(`USER USUARIO SERVICE: ${JSON.stringify(user)}`)
-      return NextResponse.json(user, { status: 200 })
+      return { user, status: 200 }
     } catch (error) {
       console.log('im here in this error to tell you the truth')
       throw error

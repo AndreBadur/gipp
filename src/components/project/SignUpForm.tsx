@@ -48,7 +48,13 @@ export default function SignUpForm() {
           <div className="grid h-full gap-1 px-3.5 pb-2">
             <div>
               <Label htmlFor="email">Email</Label>
-              <Input type="email" id="email" name="email" required />
+              <Input
+                type="email"
+                id="email"
+                name="email"
+                placeholder="email@domínio.com"
+                required
+              />
             </div>
             <div>
               <Label htmlFor="telefone">Telefone</Label>
@@ -57,6 +63,7 @@ export default function SignUpForm() {
                 id="telefone"
                 name="telefone"
                 ref={inputTelefoneMask}
+                placeholder="(DDD) 99999-9999"
                 required
               />
             </div>

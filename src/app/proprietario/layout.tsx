@@ -1,6 +1,8 @@
-import { redirect } from 'next/navigation'
 import LogoutButton from '@/components/project/LogoutButton'
 import { getServerSession } from 'next-auth'
+import SessionProvider from './SessionProvider'
+import { redirect } from 'next/navigation'
+import Header from '@/components/project/Header'
 
 export default async function Layout({
   children,
@@ -14,20 +16,9 @@ export default async function Layout({
   }
 
   return (
-    <html lang="pt-br" suppressHydrationWarning>
-      <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      </head>
-      <body>
-        {children}
-        <LogoutButton />
-        <br />
-        {session.user?.email}
-        <br />
-        {session.user?.name}
-        <br />
-        {session.user?.image}
-      </body>
-    </html>
+    <SessionProvider session={session}>
+      {children}
+      <LogoutButton />
+    </SessionProvider>
   )
 }

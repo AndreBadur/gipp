@@ -9,9 +9,21 @@ datasource db {
 }
 
 model usuario {
-  id          Int    @id @default(autoincrement())
-  email       String @unique(map: "usuario_email_unique") @db.VarChar(100)
-  telefone    String @db.VarChar(40)
-  senha       String @db.VarChar(100)
-  chave_senha String @db.VarChar(100)
+  id           Int           @id @default(autoincrement())
+  email        String        @unique(map: "usuario_email_unique") @db.VarChar(100)
+  telefone     String        @db.VarChar(40)
+  senha        String        @db.VarChar(100)
+  chave_senha  String        @db.VarChar(100)
+  proprietario proprietario?
+}
+
+model proprietario {
+  id       Int     @default(autoincrement())
+  registro String  @db.VarChar
+  cep      String  @db.VarChar
+  endereco String  @db.VarChar
+  numero   String  @db.VarChar
+  email    String  @unique(map: "email_proprietario") @db.VarChar
+  nome     String? @db.VarChar
+  usuario  usuario @relation(fields: [email], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "proprietario_usuario_fk")
 }
