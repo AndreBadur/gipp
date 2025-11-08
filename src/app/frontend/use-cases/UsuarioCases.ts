@@ -6,25 +6,35 @@ import { verifyApiResponse } from '../lib/tools'
 interface IUserResponse {
   success: boolean
   data: {
-    user: IUsuario
+    dataConnection: IUsuario
     status: number
   }
 }
+
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ??
+  'http://localhost:3000/api/routeHandler'
 
 export async function autenticarUsuario(
   email: string,
   senha: string
 ): Promise<IUserResponse | undefined> {
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/routeHandler?class=UsuarioService&method=buscarUsuarioPorEmail&email=${email}&senha=${senha}`,
-      {
-        method: 'GET',
-      }
-    )
+    const params = new URLSearchParams({
+      class: 'UsuarioService',
+      method: 'buscarUsuarioPorEmail',
+      email,
+      senha,
+    })
 
-    verifyApiResponse(response)
-    return response.json()
+    const response = await fetch(`${API_BASE_URL}?${params.toString()}`, {
+      method: 'GET',
+    })
+
+    const result = await response.json()
+    verifyApiResponse(result)
+
+    return result
   } catch (error) {
     console.error(error)
     return undefined
@@ -37,7 +47,7 @@ export async function criarUsuario(
   senha: string
 ) {
   try {
-    const response = await fetch('http://localhost:3000/api/routeHandler', {
+    const response = await fetch(API_BASE_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -49,8 +59,10 @@ export async function criarUsuario(
       }),
     })
 
-    verifyApiResponse(response)
-    return response.json()
+    const result = await response.json()
+    verifyApiResponse(result)
+
+    return result
   } catch (error) {
     console.error(error)
     return undefined
@@ -59,7 +71,7 @@ export async function criarUsuario(
 
 export async function deletarUsuario(email: string) {
   try {
-    const response = await fetch('http://localhost:3000/api/routeHandler', {
+    const response = await fetch(API_BASE_URL, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -71,8 +83,10 @@ export async function deletarUsuario(email: string) {
       }),
     })
 
-    verifyApiResponse(response)
-    return response.json()
+    const result = await response.json()
+    verifyApiResponse(result)
+
+    return result
   } catch (error) {
     console.error(error)
     return undefined

@@ -1,5 +1,6 @@
 import { ProprietarioService } from '@/app/backend/services/ProprietarioService'
 import { UsuarioService } from '@/app/backend/services/UsuarioService'
+import { mapErrorToResponse } from '@/app/backend/utils/verifications'
 import { NextResponse } from 'next/server'
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -38,8 +39,8 @@ export async function POST(req: Request) {
     )
 
     return NextResponse.json({ success: true, data: result, status: 202 })
-  } catch (error) {
-    return NextResponse.json({ success: false, data: error, status: 500 })
+  } catch (error: any) {
+    return mapErrorToResponse(error)
   }
 }
 
@@ -92,10 +93,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ success: true, data: result })
   } catch (error: any) {
-    return NextResponse.json(
-      { success: false, message: error.message },
-      { status: 500 }
-    )
+    return mapErrorToResponse(error)
   }
 }
 
@@ -128,8 +126,8 @@ export async function PATCH(req: Request) {
     )
 
     return NextResponse.json({ success: true, data: result, status: 202 })
-  } catch (error) {
-    return NextResponse.json({ success: false, data: error, status: 500 })
+  } catch (error: any) {
+    return mapErrorToResponse(error)
   }
 }
 
@@ -162,7 +160,7 @@ export async function DELETE(req: Request) {
     )
 
     return NextResponse.json({ success: true, data: result, status: 200 })
-  } catch (error) {
-    return NextResponse.json({ success: false, data: error, status: 500 })
+  } catch (error: any) {
+    return mapErrorToResponse(error)
   }
 }

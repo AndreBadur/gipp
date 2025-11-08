@@ -53,7 +53,6 @@ export default function CadastroDeProprietarioForm() {
   }
 
   async function validarESalvar(e: FormEvent<HTMLFormElement>) {
-    console.log('valor de existente: ' + existente)
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
 
@@ -110,6 +109,7 @@ export default function CadastroDeProprietarioForm() {
           })
         }
       } catch (error) {
+        console.error(error)
         setToast({
           title: 'Erro inesperado',
           description: 'Ocorreu um erro ao processar sua solicitação.',
@@ -145,6 +145,7 @@ export default function CadastroDeProprietarioForm() {
         })
       }
     } catch (error) {
+      console.error(error)
       setToast({
         title: 'Erro inesperado',
         description: 'Ocorreu um erro ao processar sua solicitação.',
@@ -160,37 +161,39 @@ export default function CadastroDeProprietarioForm() {
       buscarProprietarioPorEmail(session.user.email)
         .then((data) => {
           if (data) {
-            setNomeCompleto(data.data.data.nome)
-            setRegistro(data.data.data.registro)
-            setCep(data.data.data.cep)
-            setEmail(session?.user?.email ?? data.data.data.email)
-            setEndereco(data.data.data.endereco)
-            setNumero(data.data.data.numero)
+            setNomeCompleto(data.data.dataConnection.nome)
+            setRegistro(data.data.dataConnection.registro)
+            setCep(data.data.dataConnection.cep)
+            setEmail(data.data.dataConnection.email)
+            setEndereco(data.data.dataConnection.endereco)
+            setNumero(data.data.dataConnection.numero)
             setExistente(true)
 
             if (inputCEPMask.current) {
-              inputCEPMask.current.value = data.data.data.cep
+              inputCEPMask.current.value = data.data.dataConnection.cep
             }
 
-            if (data.data.data.registro.length > 12) {
+            if (data.data.dataConnection.registro.length > 12) {
               setIsPessoaJuridica(true)
               if (registroMask.current)
                 registroMask.current.value = outFormatCNPJ(
-                  data.data.data.registro
+                  data.data.dataConnection.registro
                 )
             } else {
               if (registroMask.current)
                 registroMask.current.value = outFormatCPF(
-                  data.data.data.registro
+                  data.data.dataConnection.registro
                 )
             }
+          } else {
+            setEmail(session.user?.email ?? '')
           }
         })
         .catch((error) => {
-          console.log(error)
+          console.error(error)
         })
     }
-  }, [session])
+  }, [session, inputCEPMask, registroMask])
 
   return (
     <>
@@ -242,6 +245,7 @@ export default function CadastroDeProprietarioForm() {
                 id="registro"
                 name="registro"
                 ref={registroMask}
+                defaultValue={registro}
                 required
               />
             </div>
@@ -263,6 +267,7 @@ export default function CadastroDeProprietarioForm() {
                 name="cep"
                 required
                 ref={inputCEPMask}
+                defaultValue={cep}
               />
             </div>
             <div>

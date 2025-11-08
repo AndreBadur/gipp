@@ -1,6 +1,5 @@
 'use client'
 
-import LogoButton from '@/components/project/LogoButton'
 import { Button } from '@/components/ui/button'
 import { redirectSignIn, redirectSignUp } from './frontend/lib/tools'
 import Header from '@/components/project/Header'

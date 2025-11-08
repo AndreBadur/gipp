@@ -5,10 +5,27 @@ export function isDataNullOrUndefined(data: any) {
   if (data !== null && data !== undefined) {
     return false
   }
-  throw Error
+  if (data == null || data == undefined) {
+    throw new Error('Retorno vazio', { cause: 'void' })
+  }
+  throw new Error('Erro inesperado', { cause: 'unexpected' })
 }
 
 export async function fromRequestToGenericType<T>(request: NextRequest) {
   const data: T = await request.json()
   return data
+}
+
+export function mapErrorToResponse(error: Error) {
+  if (error.cause === 'void') {
+    return Response.json(
+      { success: false, statusText: 'Não contém dados' },
+      { status: 404 }
+    )
+  }
+
+  return Response.json(
+    { success: false, statusText: 'Erro interno inesperado.' },
+    { status: 500 }
+  )
 }

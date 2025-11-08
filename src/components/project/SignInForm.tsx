@@ -3,7 +3,6 @@ import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 import { FormEvent } from 'react'
-import { redirect } from 'next/navigation'
 import { redirectSignUp } from '@/app/frontend/lib/tools'
 
 export default function SignInForm() {

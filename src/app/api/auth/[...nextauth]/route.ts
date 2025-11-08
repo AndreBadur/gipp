@@ -38,14 +38,10 @@ const handler = NextAuth({
         const { email, senha } = credentials
 
         const res = await autenticarUsuario(email, senha)
-        // const user = await res.json()
-        console.log('user no nextauth: ', res)
         if (res?.success && res.data.status == 200) {
-          console.log('estou dentro do if')
           return {
-            id: res.data.user.id.toString(),
-            email: res.data.user.email,
-            telefone: res.data.user.telefone,
+            id: res.data.dataConnection.id.toString(),
+            email: res.data.dataConnection.email,
           }
         }
         console.log('estou fora do if')

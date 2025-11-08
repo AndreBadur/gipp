@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { isDataNullOrUndefined } from '../utils/verifications'
 import { PrismaClient } from '@/generated/prisma'
 
@@ -13,62 +12,48 @@ export interface IUsuario {
 }
 
 export class UsuarioService {
-  async buscarUsuarioPorEmail(data: IUsuario) {
-    const { email, senha } = data
-    try {
-      const user = await prisma.usuario.findUnique({
-        where: {
-          email: email,
-          AND: {
-            senha,
-          },
-        },
-      })
+  async criarUsuario(data: IUsuario) {
+    const { email, senha, telefone, chave_senha = '0' } = data
 
-      isDataNullOrUndefined(user)
-      console.log(`USER USUARIO SERVICE: ${JSON.stringify(user)}`)
-      return { user, status: 200 }
-    } catch (error) {
-      console.log('im here in this error to tell you the truth')
-      throw error
-    }
+    const dataConnection = await prisma.usuario.create({
+      data: {
+        email,
+        senha,
+        telefone,
+        chave_senha,
+      },
+    })
+
+    isDataNullOrUndefined(dataConnection)
+    return { dataConnection, status: 201 }
   }
 
-  async criarUsuario(data: IUsuario) {
-    console.log('cheguei até no criarUsuario')
-    const { email, senha, telefone, chave_senha = '0' } = data
-    try {
-      const request = await prisma.usuario.create({
-        data: {
-          email,
+  async buscarUsuarioPorEmail(data: IUsuario) {
+    const { email, senha } = data
+
+    const dataConnection = await prisma.usuario.findUnique({
+      where: {
+        email: email,
+        AND: {
           senha,
-          telefone,
-          chave_senha,
         },
-      })
+      },
+    })
 
-      isDataNullOrUndefined(request)
-
-      return NextResponse.json(data, { status: 201 })
-    } catch (error) {
-      throw error
-    }
+    isDataNullOrUndefined(dataConnection)
+    return { dataConnection, status: 200 }
   }
 
   async deletarUsuario(data: IUsuario) {
     const { email } = data
-    try {
-      const request = await prisma.usuario.delete({
-        where: {
-          email,
-        },
-      })
 
-      isDataNullOrUndefined(request)
+    const dataConnection = await prisma.usuario.delete({
+      where: {
+        email,
+      },
+    })
 
-      return NextResponse.json(data, { status: 201 })
-    } catch (error) {
-      throw error
-    }
+    isDataNullOrUndefined(dataConnection)
+    return { dataConnection, status: 201 }
   }
 }

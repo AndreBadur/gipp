@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { IApiResponse } from './interfaces'
 
 export function validarSenha(senha: string, confirmaSenha: string): string {
   if (!senha || senha.length < 8) {
@@ -130,8 +131,9 @@ export function redirectHome() {
   redirect('/')
 }
 
-export function verifyApiResponse(response: Response) {
-  if (response.ok) {
+export function verifyApiResponse(response: IApiResponse<unknown>) {
+  console.log('response em verify ', response)
+  if (response.success) {
     return true
   }
   throw Error

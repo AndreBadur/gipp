@@ -2,7 +2,6 @@ import LogoutButton from '@/components/project/LogoutButton'
 import { getServerSession } from 'next-auth'
 import SessionProvider from './SessionProvider'
 import { redirect } from 'next/navigation'
-import Header from '@/components/project/Header'
 
 export default async function Layout({
   children,
@@ -17,8 +16,11 @@ export default async function Layout({
 
   return (
     <SessionProvider session={session}>
+      CONTEÚDO DO LAYOUT DE PROPRIETARIO
       {children}
-      <LogoutButton />
+      <div className="flex fixed bottom-4 left-4 z-50">
+        <LogoutButton />
+      </div>
     </SessionProvider>
   )
 }

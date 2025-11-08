@@ -17,83 +17,64 @@ export class ProprietarioService {
   async criarProprietario(data: IProprietario) {
     const { registro, cep, endereco, numero, email, nome } = data
 
-    try {
-      const data = await prisma.proprietario.create({
-        data: {
-          registro,
-          cep,
-          endereco,
-          numero,
-          email,
-          nome,
-        },
-      })
+    const dataConnection = await prisma.proprietario.create({
+      data: {
+        registro,
+        cep,
+        endereco,
+        numero,
+        email,
+        nome,
+      },
+    })
 
-      isDataNullOrUndefined(data)
-      return { data, status: 201 }
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
+    isDataNullOrUndefined(dataConnection)
+    return { dataConnection, status: 201 }
   }
 
   async buscarProprietarioPorEmail(data: IProprietario) {
     const { email } = data
 
-    try {
-      const data = await prisma.proprietario.findUnique({
-        where: {
-          email,
-        },
-      })
+    const dataConnection = await prisma.proprietario.findUnique({
+      where: {
+        email,
+      },
+    })
 
-      isDataNullOrUndefined(data)
-      return { data, status: 200 }
-    } catch (error) {
-      throw error
-    }
+    isDataNullOrUndefined(dataConnection)
+    return { dataConnection, status: 200 }
   }
 
   async atualizarProprietarioPorEmail(data: IProprietario) {
     const { registro, cep, endereco, numero, email, nome } = data
 
-    try {
-      const data = await prisma.proprietario.update({
-        data: {
-          registro,
-          cep,
-          endereco,
-          numero,
-          nome,
-        },
-        where: {
-          email,
-        },
-      })
+    const dataConnection = await prisma.proprietario.update({
+      data: {
+        registro,
+        cep,
+        endereco,
+        numero,
+        nome,
+      },
+      where: {
+        email,
+      },
+    })
 
-      isDataNullOrUndefined(data)
-      return { data, status: 200 }
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
+    isDataNullOrUndefined(dataConnection)
+    return { dataConnection, status: 200 }
   }
 
   async deletarProprietarioPorEmail(data: IProprietario) {
     const { email } = data
 
-    try {
-      const data = await prisma.proprietario.delete({
-        where: {
-          email,
-        },
-      })
+    const dataConnection = await prisma.proprietario.delete({
+      where: {
+        email,
+      },
+    })
 
-      isDataNullOrUndefined(data)
-      return { data, status: 200 }
-    } catch (error) {
-      console.error(error)
-      throw error
-    }
+    isDataNullOrUndefined(dataConnection)
+    return { dataConnection, status: 200 }
   }
 }

@@ -1,13 +1,17 @@
 import { IProprietario } from '@/app/backend/services/ProprietarioService'
 import { verifyApiResponse } from '../lib/tools'
 
-interface IProprietarioResponse {
+export interface IApiResponse<T> {
   success: boolean
   data: {
-    data: IProprietario
+    dataConnection: T
     status: number
   }
 }
+
+const API_BASE_URL =
+  process.env.NEXT_PUBLIC_API_BASE_URL ??
+  'http://localhost:3000/api/routeHandler'
 
 export async function criarProprietario(
   registro: string,
@@ -16,9 +20,9 @@ export async function criarProprietario(
   numero: string,
   email: string,
   nome: string
-): Promise<IProprietarioResponse | undefined> {
+): Promise<IApiResponse<IProprietario> | undefined> {
   try {
-    const response = await fetch('http://localhost:3000/api/routeHandler', {
+    const response = await fetch(API_BASE_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -30,8 +34,10 @@ export async function criarProprietario(
       }),
     })
 
-    verifyApiResponse(response)
-    return response.json()
+    const result = await response.json()
+    verifyApiResponse(result)
+
+    return result
   } catch (error) {
     console.error(error)
     return undefined
@@ -40,23 +46,30 @@ export async function criarProprietario(
 
 export async function buscarProprietarioPorEmail(
   email: string
-): Promise<IProprietarioResponse | undefined> {
+): Promise<IApiResponse<IProprietario> | undefined> {
   if (email === '') {
     throw Error('email inválido na busca pelo proprietário')
   }
 
   try {
-    const response = await fetch(
-      `http://localhost:3000/api/routeHandler?class=ProprietarioService&method=buscarProprietarioPorEmail&email=${email}`,
-      {
-        method: 'GET',
-      }
-    )
+    const params = new URLSearchParams({
+      class: 'ProprietarioService',
+      method: 'buscarProprietarioPorEmail',
+      email,
+    })
 
-    verifyApiResponse(response)
-    return response.json()
+    const response = await fetch(`${API_BASE_URL}?${params.toString()}`, {
+      method: 'GET',
+    })
+
+    const result = await response.json()
+    verifyApiResponse(result)
+
+    console.log('formato do result no buscarProp: ', result)
+
+    return result
   } catch (error) {
-    console.error(error)
+    console.log(error)
     return undefined
   }
 }
@@ -68,9 +81,9 @@ export async function atualizarProprietarioPorEmail(
   numero: string,
   email: string,
   nome: string
-): Promise<IProprietarioResponse | undefined> {
+): Promise<IApiResponse<IProprietario> | undefined> {
   try {
-    const response = await fetch('http://localhost:3000/api/routeHandler', {
+    const response = await fetch(API_BASE_URL, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -82,8 +95,10 @@ export async function atualizarProprietarioPorEmail(
       }),
     })
 
-    verifyApiResponse(response)
-    return response.json()
+    const result = await response.json()
+    verifyApiResponse(result)
+
+    return result
   } catch (error) {
     console.error(error)
     return undefined
@@ -92,7 +107,7 @@ export async function atualizarProprietarioPorEmail(
 
 export async function deletarProprietario(email: string) {
   try {
-    const response = await fetch('http://localhost:3000/api/routeHandler', {
+    const response = await fetch(API_BASE_URL, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -104,8 +119,10 @@ export async function deletarProprietario(email: string) {
       }),
     })
 
-    verifyApiResponse(response)
-    return response.json()
+    const result = await response.json()
+    verifyApiResponse(result)
+
+    return result
   } catch (error) {
     console.error(error)
     return undefined
