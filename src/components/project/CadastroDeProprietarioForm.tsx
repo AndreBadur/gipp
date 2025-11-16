@@ -3,7 +3,7 @@
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
-import { FormEvent, useContext, useEffect, useState } from 'react'
+import { FormEvent, useContext, useEffect, useRef, useState } from 'react'
 import { Checkbox } from '../ui/checkbox'
 import { useMask } from '@react-input/mask'
 import {
@@ -20,6 +20,7 @@ import {
 } from '@/app/frontend/use-cases/ProprietarioCases'
 import { SessionContext } from '@/app/proprietario/SessionProvider'
 import { Toast } from '../ui/toast'
+import DialogConfirmaDelecao from './DialogConfirmaDelecao'
 
 export default function CadastroDeProprietarioForm() {
   const [isPessoaJuridica, setIsPessoaJuridica] = useState<boolean>(false)
@@ -35,6 +36,7 @@ export default function CadastroDeProprietarioForm() {
     description?: string
     variant: 'default' | 'success' | 'error'
   } | null>(null)
+  const deleteDialogRef = useRef<HTMLDialogElement>(null)
   const registroMask = useMask({
     mask: isPessoaJuridica ? '__.___.___/____-__' : '___.___.___-__',
     replacement: { _: /\d/ },
@@ -43,6 +45,8 @@ export default function CadastroDeProprietarioForm() {
     mask: '_____-___',
     replacement: { _: /\d/ },
   })
+
+  const session = useContext(SessionContext)
 
   const verificarTipoUsuario = () => {
     if (isPessoaJuridica === true) {
@@ -61,7 +65,7 @@ export default function CadastroDeProprietarioForm() {
     const cep = formData.get('cep') as string
     const endereco = formData.get('endereco') as string
     const numero = formData.get('numero') as string
-    const emailForm = session?.user?.email ?? email
+    const emailForm = session?.session?.user?.email ?? email
 
     let valido: boolean
     if (isPessoaJuridica) {
@@ -154,11 +158,9 @@ export default function CadastroDeProprietarioForm() {
     }
   }
 
-  const session = useContext(SessionContext)
-
   useEffect(() => {
-    if (session?.user?.email) {
-      buscarProprietarioPorEmail(session.user.email)
+    if (session?.session?.user?.email) {
+      buscarProprietarioPorEmail(session?.session?.user?.email)
         .then((data) => {
           if (data) {
             setNomeCompleto(data.data.dataConnection.nome)
@@ -186,7 +188,7 @@ export default function CadastroDeProprietarioForm() {
                 )
             }
           } else {
-            setEmail(session.user?.email ?? '')
+            setEmail(session?.session?.user?.email ?? '')
           }
         })
         .catch((error) => {
@@ -310,8 +312,8 @@ export default function CadastroDeProprietarioForm() {
                   type="button"
                   variant="delete"
                   size="icon"
-                  onClick={async () => {
-                    await resultadoDeleçao()
+                  onClick={() => {
+                    deleteDialogRef.current?.showModal()
                   }}
                 >
                   <svg
@@ -340,6 +342,14 @@ export default function CadastroDeProprietarioForm() {
           </div>
         </div>
       </form>
+      <DialogConfirmaDelecao
+        dialogRef={deleteDialogRef}
+        onConfirm={async () => {
+          await resultadoDeleçao()
+        }}
+        temCerteza="Tem certeza que deseja excluir o proprietário?"
+        estaAcao="Esta ação não pode ser desfeita e significa excluir todos os recursos relacionados"
+      />
     </>
   )
 }

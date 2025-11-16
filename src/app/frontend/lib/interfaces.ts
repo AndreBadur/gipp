@@ -1,7 +1,7 @@
 export interface IApiResponse<T> {
   success: boolean
   data: {
-    data: T
+    dataConnection: T
     status: number
   }
 }

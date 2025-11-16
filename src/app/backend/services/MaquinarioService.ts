@@ -12,6 +12,7 @@ export interface IMaquinario {
   ultima_manutencao: Date
   alugado: boolean
   id_proprietario: number
+  id_propriedade: number
 }
 
 export class MaquinarioService {
@@ -43,16 +44,33 @@ export class MaquinarioService {
   }
 
   async buscarMaquinarioPorId(data: IMaquinario) {
-    const { id } = data
+    const { id, id_proprietario } = data
 
-    const maquinario = await prisma.maquinario.findUnique({
+    const dataConnection = await prisma.maquinario.findFirst({
       where: {
-        id,
+        id: Number(id),
+        id_proprietario: Number(id_proprietario),
       },
     })
 
-    isDataNullOrUndefined(maquinario)
-    return { data: maquinario, status: 200 }
+    isDataNullOrUndefined(dataConnection)
+    return { dataConnection, status: 200 }
+  }
+
+  async buscarTodosMaquinarios(data: IMaquinario) {
+    const { id_proprietario } = data
+
+    const dataConnection = await prisma.maquinario.findMany({
+      where: {
+        id_proprietario: Number(id_proprietario),
+      },
+      orderBy: {
+        modelo: 'asc',
+      },
+    })
+
+    isDataNullOrUndefined(dataConnection)
+    return { dataConnection, status: 200 }
   }
 
   async atualizarMaquinarioPorId(data: IMaquinario) {
@@ -67,7 +85,7 @@ export class MaquinarioService {
       id_proprietario,
     } = data
 
-    const maquinario = await prisma.maquinario.update({
+    const dataConnection = await prisma.maquinario.update({
       data: {
         modelo,
         ano_fabricacao,
@@ -78,24 +96,38 @@ export class MaquinarioService {
         id_proprietario,
       },
       where: {
-        id,
+        id: Number(id),
       },
     })
 
-    isDataNullOrUndefined(maquinario)
-    return { data: maquinario, status: 201 }
+    isDataNullOrUndefined(dataConnection)
+    return { dataConnection, status: 201 }
   }
 
   async deletarMaquinarioPorId(data: IMaquinario) {
     const { id } = data
 
-    const maquinario = await prisma.maquinario.delete({
+    const dataConnection = await prisma.maquinario.delete({
       where: {
-        id,
+        id: Number(id),
       },
     })
 
-    isDataNullOrUndefined(maquinario)
-    return { data: maquinario, status: 201 }
+    isDataNullOrUndefined(dataConnection)
+    return { dataConnection, status: 201 }
+  }
+
+  async buscarMaquinariosDaPropriedade(data: IMaquinario) {
+    const { id_proprietario, id_propriedade } = data
+
+    const dataConnection = await prisma.maquinario.findMany({
+      where: {
+        id_proprietario: Number(id_proprietario),
+        id_propriedade: Number(id_propriedade),
+      },
+    })
+
+    isDataNullOrUndefined(dataConnection)
+    return { dataConnection, status: 200 }
   }
 }

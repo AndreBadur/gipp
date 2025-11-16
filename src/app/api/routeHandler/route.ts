@@ -1,3 +1,4 @@
+import { MaquinarioService } from '@/app/backend/services/MaquinarioService'
 import { ProprietarioService } from '@/app/backend/services/ProprietarioService'
 import { UsuarioService } from '@/app/backend/services/UsuarioService'
 import { mapErrorToResponse } from '@/app/backend/utils/verifications'
@@ -8,6 +9,7 @@ type AnyClass<T = any> = new (...args: any[]) => T
 const classes: Record<string, AnyClass> = {
   UsuarioService,
   ProprietarioService,
+  MaquinarioService,
 }
 
 export async function POST(req: Request) {
@@ -89,7 +91,7 @@ export async function GET(req: Request) {
     }
 
     const result = await instance[method](payload)
-    console.log(`ROUTE HANDLER RESULT: ${JSON.stringify(result)}`)
+    // console.log(`ROUTE HANDLER RESULT: ${JSON.stringify(result)}`)
 
     return NextResponse.json({ success: true, data: result })
   } catch (error: any) {
@@ -99,6 +101,8 @@ export async function GET(req: Request) {
 
 export async function PATCH(req: Request) {
   const { class: className, method, payload } = await req.json()
+
+  console.log('CHEGUEI NA ROTA DE PATCH')
 
   try {
     const ServiceClass = classes[className]

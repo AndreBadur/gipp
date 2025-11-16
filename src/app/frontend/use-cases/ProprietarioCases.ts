@@ -1,13 +1,6 @@
 import { IProprietario } from '@/app/backend/services/ProprietarioService'
 import { verifyApiResponse } from '../lib/tools'
-
-export interface IApiResponse<T> {
-  success: boolean
-  data: {
-    dataConnection: T
-    status: number
-  }
-}
+import { IApiResponse } from '../lib/interfaces'
 
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ??

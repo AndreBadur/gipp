@@ -132,11 +132,10 @@ export function redirectHome() {
 }
 
 export function verifyApiResponse(response: IApiResponse<unknown>) {
-  console.log('response em verify ', response)
-  if (response.success) {
+  if (response.success === true) {
     return true
   }
-  throw Error
+  return false
 }
 
 export function outFormatCPF(cpf: string): string {

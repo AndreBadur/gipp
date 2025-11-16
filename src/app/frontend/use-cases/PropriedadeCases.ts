@@ -1,18 +1,18 @@
-import { IMaquinario } from '@/app/backend/services/MaquinarioService'
+import { IPropriedade } from '@/app/backend/services/PropriedadeService'
 import { verifyApiResponse } from '../lib/tools'
 
-export interface IMaquinarioResponse {
+export interface IPropriedadeResponse {
   success: boolean
   data: {
-    dataConnection: IMaquinario
+    dataConnection: IPropriedade
     status: number
   }
 }
 
-export interface IListaMaquinariosResponse {
+export interface IListaPropriedadesResponse {
   success: boolean
   data: {
-    dataConnection: IMaquinario[]
+    dataConnection: IPropriedade[]
     status: number
   }
 }
@@ -21,15 +21,12 @@ const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL ??
   'http://localhost:3000/api/routeHandler'
 
-export async function criarMaquinario(
-  modelo: string,
-  ano_fabricacao: number,
-  custo: number,
-  tipo_custo: IMaquinario['tipo_custo'],
-  ultima_manutencao: Date,
-  alugado: boolean,
+export async function criarPropriedade(
+  endereco: string,
+  gerente: string | undefined,
+  cnpj: string | undefined,
   id_proprietario: number
-): Promise<IMaquinarioResponse | undefined> {
+): Promise<IPropriedadeResponse | undefined> {
   try {
     const response = await fetch(API_BASE_URL, {
       method: 'POST',
@@ -37,15 +34,12 @@ export async function criarMaquinario(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        class: 'MaquinarioService',
-        method: 'criarMaquinario',
+        class: 'PropriedadeService',
+        method: 'criarPropriedade',
         payload: {
-          modelo,
-          ano_fabricacao,
-          custo,
-          tipo_custo,
-          ultima_manutencao,
-          alugado,
+          endereco,
+          gerente,
+          cnpj,
           id_proprietario,
         },
       }),
@@ -61,14 +55,14 @@ export async function criarMaquinario(
   }
 }
 
-export async function buscarMaquinarioPorIdEProprietario(
+export async function buscarPropriedadePorIdEProprietario(
   id: string,
   idProprietario: number
-): Promise<IMaquinarioResponse | undefined> {
+): Promise<IPropriedadeResponse | undefined> {
   try {
     const params = new URLSearchParams({
-      class: 'MaquinarioService',
-      method: 'buscarMaquinarioPorId',
+      class: 'PropriedadeService',
+      method: 'buscarPropriedadePorId',
       id,
       id_proprietario: idProprietario.toString(),
     })
@@ -87,13 +81,13 @@ export async function buscarMaquinarioPorIdEProprietario(
   }
 }
 
-export async function buscarTodosMaquinarios(
+export async function buscarTodasPropriedades(
   idProprietario: number
-): Promise<IListaMaquinariosResponse | undefined> {
+): Promise<IListaPropriedadesResponse | undefined> {
   try {
     const params = new URLSearchParams({
-      class: 'MaquinarioService',
-      method: 'buscarTodosMaquinarios',
+      class: 'PropriedadeService',
+      method: 'buscarTodasPropriedades',
       id_proprietario: idProprietario.toString(),
     })
 
@@ -111,42 +105,13 @@ export async function buscarTodosMaquinarios(
   }
 }
 
-export async function buscarTodosMaquinariosDaPropriedade(
-  idProprietario: number,
-  idPropriedade: number
-): Promise<IListaMaquinariosResponse | undefined> {
-  try {
-    const params = new URLSearchParams({
-      class: 'MaquinarioService',
-      method: 'buscarMaquinariosDaPropriedade',
-      id_proprietario: idProprietario.toString(),
-      id_propriedade: idPropriedade.toString(),
-    })
-
-    const response = await fetch(`${API_BASE_URL}?${params.toString()}`, {
-      method: 'GET',
-    })
-
-    const result = await response.json()
-    verifyApiResponse(result)
-
-    return result
-  } catch (error) {
-    console.error(error)
-    return undefined
-  }
-}
-
-export async function atualizarMaquinarioPorId(
+export async function atualizarPropriedadePorId(
   id: string,
-  modelo: string,
-  ano_fabricacao: number,
-  custo: number,
-  tipo_custo: IMaquinario['tipo_custo'],
-  ultima_manutencao: Date,
-  alugado: boolean,
+  endereco: string,
+  gerente: string | undefined,
+  cnpj: string | undefined,
   id_proprietario: number
-): Promise<IMaquinarioResponse | undefined> {
+): Promise<IPropriedadeResponse | undefined> {
   try {
     const response = await fetch(API_BASE_URL, {
       method: 'POST',
@@ -154,20 +119,18 @@ export async function atualizarMaquinarioPorId(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        class: 'MaquinarioService',
-        method: 'atualizarMaquinarioPorId',
+        class: 'PropriedadeService',
+        method: 'atualizarPropriedadePorId',
         payload: {
           id,
-          modelo,
-          ano_fabricacao,
-          custo,
-          tipo_custo,
-          ultima_manutencao: ultima_manutencao.toISOString(),
-          alugado,
+          endereco,
+          gerente,
+          cnpj,
           id_proprietario,
         },
       }),
     })
+
     const result = await response.json()
     verifyApiResponse(result)
 
@@ -178,9 +141,9 @@ export async function atualizarMaquinarioPorId(
   }
 }
 
-export async function deletarMaquinario(
+export async function deletarPropriedade(
   id: string
-): Promise<IMaquinarioResponse | undefined> {
+): Promise<IPropriedadeResponse | undefined> {
   try {
     const response = await fetch(API_BASE_URL, {
       method: 'DELETE',
@@ -188,8 +151,8 @@ export async function deletarMaquinario(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        class: 'MaquinarioService',
-        method: 'deletarMaquinarioPorId',
+        class: 'PropriedadeService',
+        method: 'deletarPropriedadePorId',
         payload: { id },
       }),
     })

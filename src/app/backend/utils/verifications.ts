@@ -2,6 +2,7 @@ import { NextRequest } from 'next/server'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isDataNullOrUndefined(data: any) {
+  console.log('log in DataNull: ', data)
   if (data !== null && data !== undefined) {
     return false
   }

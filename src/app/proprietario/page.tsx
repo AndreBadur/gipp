@@ -1,10 +1,8 @@
-import DialogProprietario from '@/components/project/DialogProprietario'
-
 export default function Page() {
   return (
     <div className="flex flex-col">
-      Texto na page proprietario
-      <DialogProprietario />
+      Nesta página adicionar dashboard interativos com valores relacionados a
+      todas as propriedades
     </div>
   )
 }
