@@ -1,4 +1,4 @@
-import { PrismaClient } from '@/generated/prisma'
+import { PrismaClient, tipo_custo_funcionario } from '@/generated/prisma'
 import { isDataNullOrUndefined } from '../utils/verifications'
 
 const prisma = new PrismaClient()
@@ -7,17 +7,14 @@ export interface IFuncionario {
   id?: number
   nome: string
   email: string
-  conta_bancaria: string
   cpf: string
-  pispasep: string
-  carteira_trabalho: string
-  data_nascimento: string
-  genero: 'masculino' | 'feminino'
-  certidao_nascimento: Buffer
-  comprovante_residencia: Buffer
-  comprovante_escolaridade: Buffer
-  reservista: Buffer
+  data_nascimento: Date
+  cargo: string
+  custo: number
+  tipo_custo: tipo_custo_funcionario
+  conta_bancaria: string
   id_proprietario: number
+  id_propriedade: number
 }
 
 export class FuncionarioService {
@@ -25,34 +22,28 @@ export class FuncionarioService {
     const {
       nome,
       email,
-      conta_bancaria,
       cpf,
-      pispasep,
-      carteira_trabalho,
       data_nascimento,
-      genero,
-      certidao_nascimento,
-      comprovante_residencia,
-      comprovante_escolaridade,
-      reservista,
+      cargo,
+      custo,
+      tipo_custo,
+      conta_bancaria,
       id_proprietario,
+      id_propriedade,
     } = data
 
     const dataConnection = await prisma.funcionario.create({
       data: {
         nome,
         email,
-        conta_bancaria,
         cpf,
-        pispasep,
-        carteira_trabalho,
         data_nascimento,
-        genero,
-        certidao_nascimento,
-        comprovante_residencia,
-        comprovante_escolaridade,
-        reservista,
+        cargo,
+        custo,
+        tipo_custo,
+        conta_bancaria,
         id_proprietario,
+        id_propriedade,
       },
     })
 
@@ -74,7 +65,24 @@ export class FuncionarioService {
     return { dataConnection, status: 200 }
   }
 
-  async buscarTodosFuncionarios(data: IFuncionario) {
+  async buscarTodosFuncionariosDaPropriedade(data: IFuncionario) {
+    const { id_propriedade, id_proprietario } = data
+
+    const dataConnection = await prisma.funcionario.findMany({
+      where: {
+        id_propriedade: Number(id_propriedade),
+        id_proprietario: Number(id_proprietario),
+      },
+      orderBy: {
+        nome: 'asc',
+      },
+    })
+
+    isDataNullOrUndefined(dataConnection)
+    return { dataConnection, status: 200 }
+  }
+
+  async buscarTodosFuncionariosDoProprietario(data: IFuncionario) {
     const { id_proprietario } = data
 
     const dataConnection = await prisma.funcionario.findMany({
@@ -95,34 +103,28 @@ export class FuncionarioService {
       id,
       nome,
       email,
-      conta_bancaria,
       cpf,
-      pispasep,
-      carteira_trabalho,
       data_nascimento,
-      genero,
-      certidao_nascimento,
-      comprovante_residencia,
-      comprovante_escolaridade,
-      reservista,
+      cargo,
+      custo,
+      tipo_custo,
+      conta_bancaria,
       id_proprietario,
+      id_propriedade,
     } = data
 
     const dataConnection = await prisma.funcionario.update({
       data: {
         nome,
         email,
-        conta_bancaria,
         cpf,
-        pispasep,
-        carteira_trabalho,
         data_nascimento,
-        genero,
-        certidao_nascimento,
-        comprovante_residencia,
-        comprovante_escolaridade,
-        reservista,
+        cargo,
+        custo,
+        tipo_custo,
+        conta_bancaria,
         id_proprietario,
+        id_propriedade,
       },
       where: {
         id: Number(id),

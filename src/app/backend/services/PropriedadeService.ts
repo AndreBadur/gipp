@@ -49,9 +49,6 @@ export class PropriedadeService {
       where: {
         id_proprietario: Number(id_proprietario),
       },
-      orderBy: {
-        endereco: 'asc',
-      },
     })
 
     isDataNullOrUndefined(dataConnection)

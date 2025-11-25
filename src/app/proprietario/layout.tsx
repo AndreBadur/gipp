@@ -34,31 +34,28 @@ export default async function Layout({
       label: 'Propriedade',
       href: '/proprietario/propriedade',
       children: [
-        { label: 'Tarefas', href: '/proprietario/propriedade/tarefas' },
-        {
-          label: 'Lançamento Contábil',
-          href: '/proprietario/propriedade/lancamento_contabil',
-        },
-        { label: 'Produtos', href: '/proprietario/propriedade/produtos' },
         { label: 'Áreas', href: '/proprietario/propriedade/areas' },
-        {
-          label: 'Fornecedores',
-          href: '/proprietario/propriedade/fornecedores',
-        },
-        { label: 'Insumos', href: '/proprietario/propriedade/insumos' },
-        {
-          label: 'Lançamento Contábil',
-          href: '/proprietario/propriedade/lancamento_contabil',
-        },
         {
           label: 'Centro de Custo',
           href: '/proprietario/propriedade/centro_custo',
         },
-        { label: 'Maquinários', href: '/proprietario/propriedade/maquinarios' },
+        {
+          label: 'Fornecedores',
+          href: '/proprietario/propriedade/fornecedores',
+        },
         {
           label: 'Funcionarios',
           href: '/proprietario/propriedade/funcionarios',
         },
+        { label: 'Insumos', href: '/proprietario/propriedade/insumos' },
+
+        {
+          label: 'Lançamento Contábil',
+          href: '/proprietario/propriedade/lancamento_contabil',
+        },
+        { label: 'Maquinários', href: '/proprietario/propriedade/maquinarios' },
+        { label: 'Produtos', href: '/proprietario/propriedade/produtos' },
+        { label: 'Tarefas', href: '/proprietario/propriedade/tarefas' },
       ],
     },
   ]

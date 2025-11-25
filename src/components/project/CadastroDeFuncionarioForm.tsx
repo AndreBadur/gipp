@@ -1,37 +1,36 @@
 'use client'
 
+import { FormEvent, useContext, useEffect, useRef, useState } from 'react'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
-import { FormEvent, useContext, useEffect, useRef, useState } from 'react'
-import { Checkbox } from '../ui/checkbox'
 import { SessionContext } from '@/app/proprietario/SessionProvider'
 import { Toast } from '../ui/toast'
 import DialogConfirmaDelecao from './DialogConfirmaDelecao'
-import { tipo_custo } from '@/generated/prisma'
+import { tipo_custo_funcionario } from '@/generated/prisma'
 import {
-  atualizarMaquinarioPorId,
-  buscarMaquinarioPorIdEProprietario,
-  criarMaquinario,
-  deletarMaquinario,
-  IMaquinarioResponse,
-} from '@/app/frontend/use-cases/MaquinarioCases'
+  atualizarFuncionarioPorId,
+  buscarFuncionarioPorIdEProprietario,
+  criarFuncionario,
+  deletarFuncionarioPorId,
+  IFuncionarioResponse,
+} from '@/app/frontend/use-cases/FuncionarioCases'
 
-export default function CadastroDeMaquinarioForm({
-  idMaquinario,
+export default function CadastroDeFuncionarioForm({
+  idFuncionario,
 }: {
-  idMaquinario?: string
+  idFuncionario?: string
 }) {
-  const [modelo, setModelo] = useState<string>('')
-  const [anoFabricacao, setAnoFabricacao] = useState<number>()
+  const [nome, setNome] = useState<string>('')
+  const [email, setEmail] = useState<string>('')
+  const [cpf, setCpf] = useState<string>('')
+  const [dataNascimento, setDataNascimento] = useState<string>('')
+  const [cargo, setCargo] = useState<string>('')
+  const [contaBancaria, setContaBancaria] = useState<string>('')
   const [custo, setCusto] = useState<number>()
-  const [tipoCusto, setTipoCusto] = useState<tipo_custo>()
-  const [ultimaManutencao, setUltimaManutencao] = useState<Date>(new Date())
-  const [alugado, setAlugado] = useState<boolean>(false)
+  const [tipoCusto, setTipoCusto] = useState<tipo_custo_funcionario>()
   const [propriedade, setPropriedade] = useState<number>()
-  const ultimaManutencaoFormatada = new Date(ultimaManutencao)
-    .toISOString()
-    .split('T')[0]
+
   const [toast, setToast] = useState<{
     title: string
     description?: string
@@ -45,27 +44,31 @@ export default function CadastroDeMaquinarioForm({
   const propriedadeSelecionadaId = session.propriedadeSelecionadaId
 
   useEffect(() => {
-    if (idMaquinario) {
-      buscarMaquinarioPorIdEProprietario(
-        idMaquinario,
-        idProprietario ?? 0
-      ).then((data) => {
-        setModelo(data?.data.dataConnection?.modelo ?? '')
-        setAnoFabricacao(data?.data.dataConnection?.ano_fabricacao)
-        setCusto(data?.data.dataConnection.custo)
-        setTipoCusto(data?.data.dataConnection.tipo_custo)
-        setUltimaManutencao(
-          data?.data.dataConnection?.ultima_manutencao ?? new Date()
-        )
-        setAlugado(data?.data.dataConnection?.alugado ?? false)
-        setPropriedade(
-          data?.data.dataConnection?.id_propriedade ??
-            propriedadeSelecionadaId ??
-            undefined
-        )
-      })
-    }
-  }, [session, idMaquinario, idProprietario, propriedadeSelecionadaId])
+    if (!idFuncionario) return
+
+    buscarFuncionarioPorIdEProprietario(
+      idFuncionario,
+      idProprietario ?? 0
+    ).then((data) => {
+      const funcionario = data?.data.dataConnection
+      if (!funcionario) return
+      setNome(funcionario.nome ?? '')
+      setEmail(funcionario.email ?? '')
+      setCpf(funcionario.cpf ?? '')
+      setDataNascimento(
+        funcionario.data_nascimento
+          ? new Date(funcionario.data_nascimento).toISOString().split('T')[0]
+          : ''
+      )
+      setCargo(funcionario.cargo)
+      setCusto(funcionario.custo ?? 0)
+      setTipoCusto(funcionario.tipo_custo ?? undefined)
+      setContaBancaria(funcionario.conta_bancaria ?? '')
+      setPropriedade(
+        funcionario.id_propriedade ?? propriedadeSelecionadaId ?? undefined
+      )
+    })
+  }, [idFuncionario, idProprietario, propriedadeSelecionadaId])
 
   useEffect(() => {
     if (propriedade || propriedades.length === 0) return
@@ -76,51 +79,53 @@ export default function CadastroDeMaquinarioForm({
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
 
-    const modelo = formData.get('modelo') as string
-    const anoFabricacao = formData.get('anoFabricacao') as string
-    const custo = formData.get('custo') as string
-    const tipoCusto = formData.get('tipoCusto') as tipo_custo
-
-    let alugado: boolean = false
-    const checkboxAlugado = formData.get('alugado') as string
-    if (checkboxAlugado !== null) {
-      alugado = true
-    }
+    const nome = formData.get('nome') as string
+    const email = formData.get('email') as string
+    const cpf = formData.get('cpf') as string
+    const cargo = formData.get('cargo') as string
+    const data_nascimento = formData.get('data_nascimento') as string
+    const conta_bancaria = formData.get('conta_bancaria') as string
+    const custo = Number(formData.get('custo') ?? 0)
+    const tipo_custo = formData.get('tipo_custo') as tipo_custo_funcionario
 
     try {
-      let resultado: IMaquinarioResponse | undefined
-      if (idMaquinario) {
-        resultado = await atualizarMaquinarioPorId(
-          idMaquinario,
-          modelo,
-          Number(anoFabricacao),
-          Number(custo),
-          tipoCusto,
-          new Date(ultimaManutencao),
-          alugado,
+      let resultado: IFuncionarioResponse | undefined
+      if (idFuncionario) {
+        resultado = await atualizarFuncionarioPorId(
+          idFuncionario,
+          nome,
+          email,
+          cpf,
+          new Date(data_nascimento),
+          cargo,
+          custo,
+          tipo_custo,
+          conta_bancaria,
           idProprietario ?? 0,
           propriedade ?? 0
         )
-        window.location.reload()
       } else {
-        resultado = await criarMaquinario(
-          modelo,
-          Number(anoFabricacao),
-          Number(custo),
-          tipoCusto,
-          new Date(ultimaManutencao),
-          alugado,
+        resultado = await criarFuncionario(
+          nome,
+          email,
+          cpf,
+          new Date(data_nascimento),
+          cargo,
+          custo,
+          tipo_custo,
+          conta_bancaria,
           idProprietario ?? 0,
           propriedade ?? 0
         )
-        window.location.reload()
       }
 
       if (resultado && resultado.success) {
         setToast({
-          title: idMaquinario ? 'Maquinário atualizado!' : 'Maquinário criado!',
-          description: `${modelo} foi ${
-            idMaquinario ? 'atualizado' : 'cadastrado'
+          title: idFuncionario
+            ? 'Funcionário atualizado!'
+            : 'Funcionário criado!',
+          description: `${nome} foi ${
+            idFuncionario ? 'atualizado' : 'cadastrado'
           } com sucesso.`,
           variant: 'success',
         })
@@ -142,47 +147,39 @@ export default function CadastroDeMaquinarioForm({
     }
   }
 
-  async function resultadoDeleçao() {
-    if (idMaquinario) {
-      try {
-        const resultado = await deletarMaquinario(idMaquinario)
-
-        if (resultado && resultado.success) {
-          setToast({
-            title: 'Maquinário excluido!',
-            description: `${modelo} foi excluído com sucesso.`,
-            variant: 'success',
-          })
-          window.location.reload()
-        } else {
-          setToast({
-            title: 'Erro ao salvar',
-            description: 'Não foi possível salvar os dados. Tente novamente.',
-            variant: 'error',
-          })
-        }
-      } catch (error) {
-        console.error(error)
-        setToast({
-          title: 'Erro inesperado',
-          description: 'Ocorreu um erro ao processar sua solicitação.',
-          variant: 'error',
-        })
-      }
-    } else {
+  async function resultadoDelecao() {
+    if (!idFuncionario) {
       setToast({
         title: 'Erro ao salvar',
         description: 'Não foi possível salvar os dados. Tente novamente.',
         variant: 'error',
       })
+      return
     }
-  }
 
-  async function validarPatrimonio() {
-    if (alugado === true) {
-      setAlugado(false)
-    } else {
-      setAlugado(true)
+    try {
+      const resultado = await deletarFuncionarioPorId(idFuncionario)
+      if (resultado && resultado.success) {
+        setToast({
+          title: 'Funcionário excluído!',
+          description: `${nome} foi excluído com sucesso.`,
+          variant: 'success',
+        })
+        window.location.reload()
+      } else {
+        setToast({
+          title: 'Erro ao salvar',
+          description: 'Não foi possível salvar os dados. Tente novamente.',
+          variant: 'error',
+        })
+      }
+    } catch (error) {
+      console.error(error)
+      setToast({
+        title: 'Erro inesperado',
+        description: 'Ocorreu um erro ao processar sua solicitação.',
+        variant: 'error',
+      })
     }
   }
 
@@ -198,84 +195,95 @@ export default function CadastroDeMaquinarioForm({
       )}
 
       <form
-        className={`bg-secondary-background h-auto w-full p-1 rounded-lg`}
+        className="h-auto w-full rounded-lg bg-secondary-background p-1"
         onSubmit={salvar}
       >
-        <div className={`w-full h-auto`}>
+        <div className="w-full">
           <div className="grid h-full gap-1 px-3.5 pb-2">
             <div>
-              <Label htmlFor="modelo">Modelo *</Label>
+              <Label htmlFor="nome">Nome *</Label>
               <Input
                 type="text"
-                id="modelo"
-                name="modelo"
-                defaultValue={modelo}
+                id="nome"
+                name="nome"
+                defaultValue={nome}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="anoFabricacao">Ano de Fabricação</Label>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                type="email"
+                id="email"
+                name="email"
+                defaultValue={email}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="cpf">CPF *</Label>
               <Input
                 type="text"
-                id="anoFabricacao"
-                name="anoFabricacao"
-                defaultValue={anoFabricacao}
+                id="cpf"
+                name="cpf"
+                defaultValue={cpf}
+                required
               />
             </div>
             <div>
-              <Label htmlFor="custo">Custo *</Label>
+              <Label htmlFor="data_nascimento">Data de nascimento</Label>
               <Input
-                type="text"
+                type="date"
+                id="data_nascimento"
+                name="data_nascimento"
+                defaultValue={dataNascimento}
+                onChange={(event) => setDataNascimento(event.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="conta_bancaria">Cargo</Label>
+              <Input type="text" id="cargo" name="cargo" defaultValue={cargo} />
+            </div>
+            <div>
+              <Label htmlFor="custo">Custo</Label>
+              <Input
+                type="number"
+                step="0.01"
                 id="custo"
                 name="custo"
                 defaultValue={custo}
+                min={0}
+                onChange={(event) => setCusto(Number(event.target.value))}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="tipoCusto">Tipo de Custo *</Label>
+              <Label htmlFor="tipo_custo">Tipo de custo</Label>
               <select
-                id="tipoCusto"
-                name="tipoCusto"
+                id="tipo_custo"
+                name="tipo_custo"
                 className="flex h-10 w-full rounded-base border-2 border-border bg-secondary-background px-3 py-2 text-sm font-base text-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2"
                 value={tipoCusto ?? ''}
-                required
                 onChange={(event) =>
-                  setTipoCusto(event.target.value as tipo_custo)
+                  setTipoCusto(event.target.value as tipo_custo_funcionario)
                 }
+                required
               >
                 <option value="" disabled hidden>
                   Selecione uma opção
                 </option>
-                <option value="hora">Hora</option>
-                <option value="diario">Diário</option>
+                <option value="diaria">Diária</option>
                 <option value="mensal">Mensal</option>
               </select>
             </div>
             <div>
-              <Label htmlFor="ultimaManutencao">Ultima Manutenção</Label>
+              <Label htmlFor="conta_bancaria">Conta bancária</Label>
               <Input
-                type="date"
-                id="ultimaManutencao"
-                name="ultimaManutencao"
-                defaultValue={ultimaManutencaoFormatada}
+                type="text"
+                id="conta_bancaria"
+                name="conta_bancaria"
+                defaultValue={contaBancaria}
               />
-            </div>
-            <div>
-              <div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="alugado"
-                    name="alugado"
-                    value={'true'}
-                    checked={alugado}
-                    onCheckedChange={validarPatrimonio}
-                  />
-                  <Label className={'m-2'} htmlFor="alugado">
-                    Maquinário Alugado
-                  </Label>
-                </div>
-              </div>
             </div>
             <div>
               <Label htmlFor="propriedade">Propriedade *</Label>
@@ -301,7 +309,7 @@ export default function CadastroDeMaquinarioForm({
                 )}
               </select>
             </div>
-            <div className="flex flex-row justify-between items-center h-auto mt-2 w-full">
+            <div className="mt-2 flex h-auto w-full flex-row items-center justify-between">
               <Button
                 type="button"
                 variant="destructive"
@@ -353,9 +361,9 @@ export default function CadastroDeMaquinarioForm({
       <DialogConfirmaDelecao
         dialogRef={deleteDialogRef}
         onConfirm={async () => {
-          await resultadoDeleçao()
+          await resultadoDelecao()
         }}
-        temCerteza="Tem certeza que deseja excluir o maquinário?"
+        temCerteza="Tem certeza que deseja excluir o funcionário?"
         estaAcao="Esta ação não pode ser desfeita e significa excluir o recurso do histórico de tarefas"
       />
     </>

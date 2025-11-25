@@ -28,7 +28,8 @@ export async function criarMaquinario(
   tipo_custo: IMaquinario['tipo_custo'],
   ultima_manutencao: Date,
   alugado: boolean,
-  id_proprietario: number
+  id_proprietario: number,
+  id_propriedade: number
 ): Promise<IMaquinarioResponse | undefined> {
   try {
     const response = await fetch(API_BASE_URL, {
@@ -47,6 +48,7 @@ export async function criarMaquinario(
           ultima_manutencao,
           alugado,
           id_proprietario,
+          id_propriedade,
         },
       }),
     })
@@ -87,7 +89,7 @@ export async function buscarMaquinarioPorIdEProprietario(
   }
 }
 
-export async function buscarTodosMaquinarios(
+export async function buscarTodosMaquinariosDoProprietario(
   idProprietario: number
 ): Promise<IListaMaquinariosResponse | undefined> {
   try {
@@ -145,7 +147,8 @@ export async function atualizarMaquinarioPorId(
   tipo_custo: IMaquinario['tipo_custo'],
   ultima_manutencao: Date,
   alugado: boolean,
-  id_proprietario: number
+  id_proprietario: number,
+  id_propriedade: number
 ): Promise<IMaquinarioResponse | undefined> {
   try {
     const response = await fetch(API_BASE_URL, {
@@ -165,6 +168,7 @@ export async function atualizarMaquinarioPorId(
           ultima_manutencao: ultima_manutencao.toISOString(),
           alugado,
           id_proprietario,
+          id_propriedade,
         },
       }),
     })

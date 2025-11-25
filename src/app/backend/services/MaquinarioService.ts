@@ -25,6 +25,7 @@ export class MaquinarioService {
       ultima_manutencao,
       alugado,
       id_proprietario,
+      id_propriedade,
     } = data
 
     const dataConnection = await prisma.maquinario.create({
@@ -36,6 +37,7 @@ export class MaquinarioService {
         ultima_manutencao,
         alugado,
         id_proprietario,
+        id_propriedade,
       },
     })
 
@@ -83,6 +85,7 @@ export class MaquinarioService {
       ultima_manutencao,
       alugado,
       id_proprietario,
+      id_propriedade,
     } = data
 
     const dataConnection = await prisma.maquinario.update({

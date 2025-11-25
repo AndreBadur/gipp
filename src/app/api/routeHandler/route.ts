@@ -1,5 +1,14 @@
+import { AreaService } from '@/app/backend/services/AreaService'
+import { CentroCustoService } from '@/app/backend/services/CentroCustoService'
+import { FornecedorService } from '@/app/backend/services/FornecedorService'
+import { FuncionarioService } from '@/app/backend/services/FuncionarioService'
+import { InsumoService } from '@/app/backend/services/InsumoService'
+import { LancamentoService } from '@/app/backend/services/LancamentoService'
 import { MaquinarioService } from '@/app/backend/services/MaquinarioService'
+import { ProdutoService } from '@/app/backend/services/ProdutoService'
+import { PropriedadeService } from '@/app/backend/services/PropriedadeService'
 import { ProprietarioService } from '@/app/backend/services/ProprietarioService'
+import { TarefaService } from '@/app/backend/services/TarefaService'
 import { UsuarioService } from '@/app/backend/services/UsuarioService'
 import { mapErrorToResponse } from '@/app/backend/utils/verifications'
 import { NextResponse } from 'next/server'
@@ -7,14 +16,24 @@ import { NextResponse } from 'next/server'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 type AnyClass<T = any> = new (...args: any[]) => T
 const classes: Record<string, AnyClass> = {
-  UsuarioService,
-  ProprietarioService,
+  AreaService,
+  CentroCustoService,
+  FornecedorService,
+  FuncionarioService,
+  InsumoService,
+  LancamentoService,
   MaquinarioService,
+  ProdutoService,
+  PropriedadeService,
+  ProprietarioService,
+  TarefaService,
+  UsuarioService,
 }
 
 export async function POST(req: Request) {
   const { class: className, method, payload } = await req.json()
-
+  console.log('ESTOU NO HANDLER')
+  console.log(method)
   try {
     const ServiceClass = classes[className]
     if (!ServiceClass) {

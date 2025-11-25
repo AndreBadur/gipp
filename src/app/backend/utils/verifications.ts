@@ -18,6 +18,7 @@ export async function fromRequestToGenericType<T>(request: NextRequest) {
 }
 
 export function mapErrorToResponse(error: Error) {
+  console.error(error)
   if (error.cause === 'void') {
     return Response.json(
       { success: false, statusText: 'Não contém dados' },

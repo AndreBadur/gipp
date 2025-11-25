@@ -105,6 +105,7 @@ export default function CadastroDeProprietarioForm() {
             } com sucesso.`,
             variant: 'success',
           })
+          window.location.reload()
         } else {
           setToast({
             title: 'Erro ao salvar',

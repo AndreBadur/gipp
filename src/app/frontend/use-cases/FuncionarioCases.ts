@@ -1,5 +1,6 @@
 import { IFuncionario } from '@/app/backend/services/FuncionarioService'
 import { verifyApiResponse } from '../lib/tools'
+import { tipo_custo_funcionario } from '@/generated/prisma'
 
 export interface IFuncionarioResponse {
   success: boolean
@@ -24,17 +25,14 @@ const API_BASE_URL =
 export async function criarFuncionario(
   nome: string,
   email: string,
-  conta_bancaria: string,
   cpf: string,
-  pispasep: string,
-  carteira_trabalho: string,
-  data_nascimento: string,
-  genero: 'masculino' | 'feminino',
-  certidao_nascimento: Buffer,
-  comprovante_residencia: Buffer,
-  comprovante_escolaridade: Buffer,
-  reservista: Buffer,
-  id_proprietario: number
+  data_nascimento: Date,
+  cargo: string,
+  custo: number,
+  tipo_custo: tipo_custo_funcionario,
+  conta_bancaria: string,
+  id_proprietario: number,
+  id_propriedade: number
 ): Promise<IFuncionarioResponse | undefined> {
   try {
     const response = await fetch(API_BASE_URL, {
@@ -48,17 +46,14 @@ export async function criarFuncionario(
         payload: {
           nome,
           email,
-          conta_bancaria,
           cpf,
-          pispasep,
-          carteira_trabalho,
-          data_nascimento,
-          genero,
-          certidao_nascimento,
-          comprovante_residencia,
-          comprovante_escolaridade,
-          reservista,
+          data_nascimento: data_nascimento.toISOString(),
+          cargo,
+          custo,
+          conta_bancaria,
+          tipo_custo,
           id_proprietario,
+          id_propriedade,
         },
       }),
     })
@@ -80,7 +75,8 @@ export async function buscarFuncionarioPorIdEProprietario(
   try {
     const params = new URLSearchParams({
       class: 'FuncionarioService',
-      method: 'buscarTodosFuncionarios',
+      method: 'buscarFuncionarioPorId',
+      id,
       id_proprietario: idProprietario.toString(),
     })
 
@@ -102,17 +98,14 @@ export async function atualizarFuncionarioPorId(
   id: string,
   nome: string,
   email: string,
-  conta_bancaria: string,
   cpf: string,
-  pispasep: string,
-  carteira_trabalho: string,
-  data_nascimento: string,
-  genero: 'masculino' | 'feminino',
-  certidao_nascimento: Buffer,
-  comprovante_residencia: Buffer,
-  comprovante_escolaridade: Buffer,
-  reservista: Buffer,
-  id_proprietario: number
+  data_nascimento: Date,
+  cargo: string,
+  custo: number,
+  tipo_custo: tipo_custo_funcionario,
+  conta_bancaria: string,
+  id_proprietario: number,
+  id_propriedade: number
 ): Promise<IFuncionarioResponse | undefined> {
   try {
     const response = await fetch(API_BASE_URL, {
@@ -122,22 +115,19 @@ export async function atualizarFuncionarioPorId(
       },
       body: JSON.stringify({
         class: 'FuncionarioService',
-        method: 'criarFuncionario',
+        method: 'atualizarFuncionarioPorId',
         payload: {
           id,
           nome,
           email,
-          conta_bancaria,
           cpf,
-          pispasep,
-          carteira_trabalho,
-          data_nascimento,
-          genero,
-          certidao_nascimento,
-          comprovante_residencia,
-          comprovante_escolaridade,
-          reservista,
+          data_nascimento: data_nascimento.toISOString(),
+          cargo,
+          custo,
+          tipo_custo,
+          conta_bancaria,
           id_proprietario,
+          id_propriedade,
         },
       }),
     })
@@ -166,6 +156,56 @@ export async function deletarFuncionarioPorId(
         method: 'deletarFuncionarioPorId',
         payload: { id },
       }),
+    })
+
+    const result = await response.json()
+    verifyApiResponse(result)
+
+    return result
+  } catch (error) {
+    console.error(error)
+    return undefined
+  }
+}
+
+export async function buscarTodosFuncionariosDaPropriedade(
+  idProprietario: number,
+  idPropriedade: number
+): Promise<IListaFuncionariosResponse | undefined> {
+  try {
+    const params = new URLSearchParams({
+      class: 'FuncionarioService',
+      method: 'buscarTodosFuncionariosDaPropriedade',
+      id_proprietario: idProprietario.toString(),
+      id_propriedade: idPropriedade.toString(),
+    })
+
+    const response = await fetch(`${API_BASE_URL}?${params.toString()}`, {
+      method: 'GET',
+    })
+
+    const result = await response.json()
+    verifyApiResponse(result)
+
+    return result
+  } catch (error) {
+    console.error(error)
+    return undefined
+  }
+}
+
+export async function buscarTodosFuncionariosDoProprietario(
+  idProprietario: number
+): Promise<IListaFuncionariosResponse | undefined> {
+  try {
+    const params = new URLSearchParams({
+      class: 'FuncionarioService',
+      method: 'buscarTodosFuncionariosDoProprietario',
+      id_proprietario: idProprietario.toString(),
+    })
+
+    const response = await fetch(`${API_BASE_URL}?${params.toString()}`, {
+      method: 'GET',
     })
 
     const result = await response.json()

@@ -58,8 +58,6 @@ export async function buscarProprietarioPorEmail(
     const result = await response.json()
     verifyApiResponse(result)
 
-    console.log('formato do result no buscarProp: ', result)
-
     return result
   } catch (error) {
     console.log(error)

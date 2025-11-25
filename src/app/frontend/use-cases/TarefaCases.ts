@@ -4,6 +4,17 @@ import {
   ITarefa,
 } from '@/app/backend/services/TarefaService'
 import { verifyApiResponse } from '../lib/tools'
+import { buscarTodosMaquinariosDaPropriedade } from './MaquinarioCases'
+import { buscarTodosFuncionariosDaPropriedade } from './FuncionarioCases'
+import {
+  atualizarInsumoPorId,
+  buscarInsumoPorId,
+  buscarTodosInsumos,
+} from './InsumoCases'
+import { IMaquinario } from '@/app/backend/services/MaquinarioService'
+import { IFuncionario } from '@/app/backend/services/FuncionarioService'
+import { IInsumo } from '@/app/backend/services/InsumoService'
+import { criarLancamento } from './LancamentoCases'
 
 export interface ITarefaResponse {
   success: boolean
@@ -24,7 +35,7 @@ export interface IListaTarefasResponse {
 export interface IAreaTarefaResponse {
   success: boolean
   data: {
-    dataConnection: IAreaTarefa | IAreaTarefa[]
+    dataConnection: IAreaTarefa[]
     status: number
   }
 }
@@ -32,9 +43,15 @@ export interface IAreaTarefaResponse {
 export interface IRecursoTarefaResponse {
   success: boolean
   data: {
-    dataConnection: IRecursoTarefa | IRecursoTarefa[]
+    dataConnection: IRecursoTarefa[]
     status: number
   }
+}
+
+export interface IListaDeRecursosResponse {
+  maquinarios: IMaquinario[]
+  funcionarios: IFuncionario[]
+  insumos: IInsumo[]
 }
 
 const API_BASE_URL =
@@ -208,8 +225,7 @@ export async function deletarTarefa(
 }
 
 export async function adicionarAreaTarefa(
-  id_area: number,
-  id_tarefa: number
+  data: IAreaTarefa[]
 ): Promise<IAreaTarefaResponse | undefined> {
   try {
     const response = await fetch(API_BASE_URL, {
@@ -220,10 +236,7 @@ export async function adicionarAreaTarefa(
       body: JSON.stringify({
         class: 'TarefaService',
         method: 'adicionarAreaTarefa',
-        payload: {
-          id_area,
-          id_tarefa,
-        },
+        payload: [data],
       }),
     })
 
@@ -262,8 +275,7 @@ export async function listarAreasDaTarefa(
 }
 
 export async function removerAreaTarefaPorId(
-  id: number,
-  id_tarefa: number
+  data: IAreaTarefa[]
 ): Promise<IAreaTarefaResponse | undefined> {
   try {
     const response = await fetch(API_BASE_URL, {
@@ -274,10 +286,7 @@ export async function removerAreaTarefaPorId(
       body: JSON.stringify({
         class: 'TarefaService',
         method: 'removerAreaTarefaPorId',
-        payload: {
-          id,
-          id_tarefa,
-        },
+        payload: [data],
       }),
     })
 
@@ -292,11 +301,7 @@ export async function removerAreaTarefaPorId(
 }
 
 export async function adicionarRecursoTarefa(
-  id_recurso: number,
-  tipo_recurso: IRecursoTarefa['tipo_recurso'],
-  quantidade: number,
-  status_lancamento: boolean,
-  id_tarefa: number
+  data: IRecursoTarefa[]
 ): Promise<IRecursoTarefaResponse | undefined> {
   try {
     const response = await fetch(API_BASE_URL, {
@@ -307,13 +312,7 @@ export async function adicionarRecursoTarefa(
       body: JSON.stringify({
         class: 'TarefaService',
         method: 'adicionarRecursoTarefa',
-        payload: {
-          id_recurso,
-          tipo_recurso,
-          quantidade,
-          status_lancamento,
-          id_tarefa,
-        },
+        payload: [data],
       }),
     })
 
@@ -351,9 +350,8 @@ export async function listarRecursosDaTarefa(
   }
 }
 
-export async function deletarRecursoDaTarefa(
-  id: number,
-  id_tarefa: number
+export async function removerRecursoDaTarefa(
+  data: IRecursoTarefa[]
 ): Promise<IRecursoTarefaResponse | undefined> {
   try {
     const response = await fetch(API_BASE_URL, {
@@ -364,10 +362,7 @@ export async function deletarRecursoDaTarefa(
       body: JSON.stringify({
         class: 'TarefaService',
         method: 'deletarRecursoDaTarefa',
-        payload: {
-          id,
-          id_tarefa,
-        },
+        payload: [data],
       }),
     })
 
@@ -379,4 +374,165 @@ export async function deletarRecursoDaTarefa(
     console.error(error)
     return undefined
   }
+}
+
+export async function buscarTodosRecursos(
+  id_propriedade: number,
+  id_proprietario: number
+): Promise<IListaDeRecursosResponse> {
+  const maquinarios = await buscarTodosMaquinariosDaPropriedade(
+    id_proprietario,
+    id_propriedade
+  )
+  const funcionarios = await buscarTodosFuncionariosDaPropriedade(
+    id_proprietario,
+    id_propriedade
+  )
+  const insumos = await buscarTodosInsumos(id_propriedade)
+  return {
+    maquinarios: maquinarios?.data.dataConnection ?? [],
+    funcionarios: funcionarios?.data.dataConnection ?? [],
+    insumos: insumos?.data.dataConnection ?? [],
+  }
+}
+
+export async function somaCustoTarefa(
+  id_tarefa: string,
+  id_propriedade: number,
+  id_proprietario: number
+) {
+  const listaMaquinarioDaTarefa: number[] = []
+  const listaFuncionarioDaTarefa: number[] = []
+  const listaInsumosDaTarefa: { id_recurso: number; quantidade: number }[] = []
+  const custoMaquinarios: number[] = []
+  const custoFuncionarios: number[] = []
+  const custoInsumos: number[] = []
+
+  try {
+    const tarefa = await buscarTarefaPorIdEPropriedade(
+      id_tarefa,
+      id_propriedade
+    )
+    const diasUteis = tarefa?.data?.dataConnection.dias_uteis
+    const horasUteis = tarefa?.data?.dataConnection.horas_trabalho
+    if (!diasUteis) {
+      throw new Error('Não há dias úteis definidos na tarefa')
+    }
+    if (!horasUteis) {
+      throw new Error('Não há horas úteis definidos na tarefa')
+    }
+
+    const listaRecursosDaTarefa = await listarRecursosDaTarefa(
+      Number(id_tarefa)
+    )
+    const recursosDaTarefa = listaRecursosDaTarefa?.data.dataConnection ?? []
+    recursosDaTarefa.map((data) => {
+      if (data.tipo_recurso === 'maquinario') {
+        listaMaquinarioDaTarefa.push(data.id_recurso)
+      }
+      if (data.tipo_recurso === 'funcionario') {
+        listaFuncionarioDaTarefa.push(data.id_recurso)
+      }
+      if (data.tipo_recurso === 'insumo') {
+        listaInsumosDaTarefa.push({
+          id_recurso: data.id_recurso,
+          quantidade: data.quantidade ?? 0,
+        })
+      }
+    })
+
+    const listaRecursosDoBD = await buscarTodosRecursos(
+      id_propriedade,
+      id_proprietario
+    )
+    listaRecursosDoBD.maquinarios.map((maquinario) => {
+      if (listaMaquinarioDaTarefa.some((id) => Number(id) === maquinario.id)) {
+        if (maquinario.tipo_custo !== 'mensal') {
+          if (maquinario.tipo_custo === 'diario') {
+            custoMaquinarios.push(maquinario.custo * diasUteis)
+          }
+          if (maquinario.tipo_custo === 'hora') {
+            custoMaquinarios.push(maquinario.custo * (horasUteis * diasUteis))
+          }
+        }
+      }
+    })
+    listaRecursosDoBD.funcionarios.map((funcionario) => {
+      if (
+        listaFuncionarioDaTarefa.some((id) => Number(id) === funcionario.id)
+      ) {
+        if (funcionario.tipo_custo !== 'mensal') {
+          if (funcionario.tipo_custo === 'diaria') {
+            custoFuncionarios.push(funcionario.custo * diasUteis)
+          }
+        }
+      }
+    })
+    listaRecursosDoBD.insumos.map((insumo) => {
+      listaInsumosDaTarefa.some((objInsumoQuantidade) => {
+        if (Number(objInsumoQuantidade.id_recurso) === insumo.id) {
+          custoInsumos.push(insumo.custo * objInsumoQuantidade.quantidade)
+        }
+      })
+    })
+
+    const custoTotal =
+      custoMaquinarios.reduce((acc, n) => acc + n, 0) +
+      custoFuncionarios.reduce((acc, n) => acc + n, 0) +
+      custoInsumos.reduce((acc, n) => acc + n, 0)
+
+    const result = {
+      listaInsumosDaTarefa,
+      custoMaquinarios,
+      custoFuncionarios,
+      custoInsumos,
+      custoTotal,
+    }
+
+    return result
+  } catch (error) {
+    console.error(error)
+    return undefined
+  }
+}
+
+export async function lancamentoDaTarefa(
+  idTarefa: string,
+  idPropriedade: number,
+  idProprietario: number,
+  centroCusto: number
+) {
+  let resultado
+  const valores = await somaCustoTarefa(
+    idTarefa,
+    idPropriedade ?? 0,
+    idProprietario ?? 0
+  )
+
+  resultado = valores?.listaInsumosDaTarefa.map(async (insumo) => {
+    const insumoData = await buscarInsumoPorId(
+      insumo.id_recurso.toString(),
+      idPropriedade
+    )
+    const insumoValores = insumoData?.data.dataConnection
+    resultado = await atualizarInsumoPorId(
+      insumo.id_recurso.toString(),
+      insumoValores?.nome ?? '',
+      insumo.quantidade - (insumoValores?.quantidade ?? 0),
+      insumoValores?.custo ?? 0,
+      insumoValores?.unidade_medida ?? '',
+      idPropriedade,
+      insumoValores?.id_fornecedor
+    )
+  })
+  const totalValor = valores?.custoTotal
+  resultado = await criarLancamento(
+    totalValor ?? 0,
+    'entrada',
+    new Date(),
+    idPropriedade ?? 0,
+    centroCusto
+  )
+
+  return resultado
 }

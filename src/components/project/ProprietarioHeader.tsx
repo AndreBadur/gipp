@@ -13,8 +13,9 @@ import DialogProprietario, {
   DialogProprietarioHandle,
 } from './DialogProprietario'
 import { LogOut, Menu, UserRound } from 'lucide-react'
-import { useMemo, useRef } from 'react'
+import { useContext, useMemo, useRef } from 'react'
 import { signOut } from 'next-auth/react'
+import { SessionContext } from '@/app/proprietario/SessionProvider'
 
 interface ProprietarioHeaderProps {
   onMenuClick: () => void
@@ -29,6 +30,12 @@ export default function ProprietarioHeader({
 }: ProprietarioHeaderProps) {
   const displayName = userName || userEmail || 'Proprietário'
   const dialogRef = useRef<DialogProprietarioHandle>(null)
+  const {
+    propriedades,
+    propriedadeSelecionadaId,
+    setPropriedadeSelecionadaId,
+    propriedadesCarregando,
+  } = useContext(SessionContext)
 
   const initials = useMemo(() => {
     if (!displayName) return 'P'
@@ -45,6 +52,20 @@ export default function ProprietarioHeader({
   const handleProfileInfo = () => {
     dialogRef.current?.open()
   }
+
+  const handlePropriedadeChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const value = event.target.value
+    setPropriedadeSelecionadaId(value ? Number(value) : null)
+  }
+
+  const propriedadeAtual = useMemo(() => {
+    if (!propriedadeSelecionadaId) return null
+    return propriedades.find(
+      (propriedade) => propriedade.id === propriedadeSelecionadaId
+    )
+  }, [propriedades, propriedadeSelecionadaId])
 
   return (
     <header className="sticky top-0 z-20 border-b border-border/40 bg-secondary-background/90 px-4 py-3 backdrop-blur">
@@ -68,7 +89,36 @@ export default function ProprietarioHeader({
             </h1>
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center">
+          <div className="flex flex-col text-xs text-foreground">
+            <span className="font-semibold text-sm">Propriedade ativa</span>
+            <select
+              className="mt-1 rounded-md border border-border/60 bg-secondary-background/60 px-3 py-2 text-sm text-foreground shadow-inner shadow-black/10 focus:outline-none focus:ring-2 focus:ring-primary"
+              value={propriedadeSelecionadaId ?? ''}
+              onChange={handlePropriedadeChange}
+              disabled={propriedadesCarregando || propriedades.length === 0}
+            >
+              {propriedadesCarregando && (
+                <option value="">Carregando propriedades...</option>
+              )}
+              {!propriedadesCarregando && propriedades.length === 0 && (
+                <option value="">Nenhuma propriedade cadastrada</option>
+              )}
+              {!propriedadesCarregando &&
+                propriedades.map((propriedade) => (
+                  <option key={propriedade.id} value={propriedade.id}>
+                    {propriedade.endereco
+                      ? propriedade.endereco
+                      : `Propriedade #${propriedade.id}`}
+                  </option>
+                ))}
+            </select>
+            {propriedadeAtual?.gerente && (
+              <span className="mt-1 text-[0.7rem] text-muted-foreground">
+                Gerente: {propriedadeAtual.gerente}
+              </span>
+            )}
+          </div>
           <div className="hidden text-right text-xs md:block">
             <p className="font-semibold text-foreground">{displayName}</p>
             <p className="text-muted-foreground">{userEmail}</p>

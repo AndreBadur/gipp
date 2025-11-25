@@ -17,16 +17,16 @@ export interface ITarefa {
 }
 
 export interface IAreaTarefa {
-  id: number
+  id?: number
   id_area: number
   id_tarefa: number
 }
 
 export interface IRecursoTarefa {
-  id: number
+  id?: number
   id_recurso: number
   tipo_recurso: 'maquinario' | 'funcionario' | 'insumo'
-  quantidade: number
+  quantidade?: number
   status_lancamento: boolean
   id_tarefa: number
 }
@@ -85,7 +85,7 @@ export class TarefaService {
         id_propriedade: Number(id_propriedade),
       },
       orderBy: {
-        data_inicio: 'desc',
+        status: 'asc',
       },
     })
 
@@ -131,7 +131,7 @@ export class TarefaService {
   async deletarTarefaPorId(data: ITarefa) {
     const { id } = data
 
-    const dataConnection = await prisma.tarefa.delete({
+    const dataConnection = await prisma.tarefa.deleteMany({
       where: {
         id: Number(id),
       },
@@ -141,14 +141,9 @@ export class TarefaService {
     return { dataConnection, status: 201 }
   }
 
-  async adicionarAreaTarefa(data: IAreaTarefa) {
-    const { id_area, id_tarefa } = data
-
-    const dataConnection = await prisma.area_tarefa.create({
-      data: {
-        id_area,
-        id_tarefa,
-      },
+  async adicionarAreaTarefa(data: IAreaTarefa[]) {
+    const dataConnection = await prisma.area_tarefa.createMany({
+      data: data,
     })
 
     isDataNullOrUndefined(dataConnection)
@@ -168,13 +163,13 @@ export class TarefaService {
     return { dataConnection, status: 200 }
   }
 
-  async removerAreaTarefaPorId(data: IAreaTarefa) {
-    const { id, id_tarefa } = data
-
-    const dataConnection = await prisma.area_tarefa.delete({
+  async removerAreaTarefaPorId(data: IAreaTarefa[]) {
+    const dataConnection = await prisma.area_tarefa.deleteMany({
       where: {
-        id: Number(id),
-        id_tarefa: Number(id_tarefa),
+        OR: data.map((item) => ({
+          id_area: item.id_area,
+          id_tarefa: item.id_tarefa,
+        })),
       },
     })
 
@@ -182,23 +177,9 @@ export class TarefaService {
     return { dataConnection, status: 201 }
   }
 
-  async adicionarRecursoTarefa(data: IRecursoTarefa) {
-    const {
-      id_recurso,
-      quantidade,
-      status_lancamento,
-      tipo_recurso,
-      id_tarefa,
-    } = data
-
-    const dataConnection = await prisma.recurso_tarefa.create({
-      data: {
-        id_recurso,
-        quantidade,
-        status_lancamento,
-        tipo_recurso,
-        id_tarefa,
-      },
+  async adicionarRecursoTarefa(data: IRecursoTarefa[]) {
+    const dataConnection = await prisma.recurso_tarefa.createMany({
+      data: data,
     })
 
     isDataNullOrUndefined(dataConnection)
@@ -210,7 +191,7 @@ export class TarefaService {
 
     const dataConnection = await prisma.recurso_tarefa.findMany({
       where: {
-        id_tarefa,
+        id_tarefa: Number(id_tarefa),
       },
     })
 
@@ -218,13 +199,13 @@ export class TarefaService {
     return { dataConnection, status: 201 }
   }
 
-  async deletarRecursoDaTarefa(data: IRecursoTarefa) {
-    const { id, id_tarefa } = data
-
-    const dataConnection = await prisma.recurso_tarefa.delete({
+  async deletarRecursoDaTarefa(data: IRecursoTarefa[]) {
+    const dataConnection = await prisma.recurso_tarefa.deleteMany({
       where: {
-        id: Number(id),
-        id_tarefa: Number(id_tarefa),
+        OR: data.map((item) => ({
+          id_recurso: item.id_recurso,
+          id_tarefa: item.id_tarefa,
+        })),
       },
     })
 
