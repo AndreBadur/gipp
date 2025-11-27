@@ -3,7 +3,7 @@
 import { IFuncionario } from '@/app/backend/services/FuncionarioService'
 import { buscarTodosFuncionariosDaPropriedade } from '@/app/frontend/use-cases/FuncionarioCases'
 import { SessionContext } from '@/app/proprietario/SessionProvider'
-import { useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 
 export default function FuncionariosDaPropriedadeTable() {
   const session = useContext(SessionContext)

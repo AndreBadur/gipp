@@ -97,6 +97,7 @@ export class MaquinarioService {
         ultima_manutencao,
         alugado,
         id_proprietario,
+        id_propriedade,
       },
       where: {
         id: Number(id),

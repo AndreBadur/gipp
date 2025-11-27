@@ -1,18 +1,13 @@
 'use client'
 
 import { IMaquinario } from '@/app/backend/services/MaquinarioService'
-import {
-  buscarTodosMaquinariosDaPropriedade,
-  buscarTodosMaquinariosDoProprietario,
-} from '@/app/frontend/use-cases/MaquinarioCases'
+import { buscarTodosMaquinariosDaPropriedade } from '@/app/frontend/use-cases/MaquinarioCases'
 import { SessionContext } from '@/app/proprietario/SessionProvider'
-import { useContext, useEffect, useMemo, useRef, useState } from 'react'
-import CadastroDeMaquinarioForm from './CadastroDeMaquinarioForm'
-import { Button } from '../ui/button'
+import { useContext, useEffect, useState } from 'react'
 
 export default function MaquinariosTableDaPropriedade() {
   const session = useContext(SessionContext)
-  const { idProprietario, propriedades, propriedadeSelecionadaId } = session
+  const { idProprietario, propriedadeSelecionadaId } = session
   const [maquinarios, setMaquinarios] = useState<IMaquinario[] | undefined>(
     undefined
   )
@@ -33,14 +28,6 @@ export default function MaquinariosTableDaPropriedade() {
     style: 'currency',
     currency: 'BRL',
   })
-
-  const propriedadePorId = useMemo(() => {
-    const mapa = new Map<number, string>()
-    propriedades.forEach((prop) => {
-      if (prop.id != null) mapa.set(prop.id, prop.endereco ?? '')
-    })
-    return mapa
-  }, [propriedades])
 
   return (
     <>

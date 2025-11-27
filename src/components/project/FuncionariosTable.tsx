@@ -9,7 +9,7 @@ import { Button } from '../ui/button'
 
 export default function FuncionariosTable() {
   const session = useContext(SessionContext)
-  const { idProprietario, propriedadeSelecionadaId, propriedades } = session
+  const { idProprietario, propriedades } = session
   const [funcionarios, setFuncionarios] = useState<IFuncionario[] | undefined>(
     undefined
   )

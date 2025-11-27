@@ -11,7 +11,6 @@ import {
   buscarLancamentoPorIdEPropriedade,
   criarLancamento,
   deletarLancamento,
-  ILancamentoResponse,
 } from '@/app/frontend/use-cases/LancamentoCases'
 import {
   buscarTodosCentrosDeCusto,
@@ -83,8 +82,7 @@ export default function CadastroDeLancamentoForm({
       : Number(centroCustoId)
 
     try {
-      let resultado: ILancamentoResponse | undefined
-      resultado = await criarLancamento(
+      const resultado = await criarLancamento(
         valor,
         tipo_lancamento,
         data_lancamento ? new Date(data_lancamento) : undefined,
