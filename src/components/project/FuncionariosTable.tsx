@@ -149,7 +149,7 @@ export default function FuncionariosTable() {
                         {funcionario.tipo_custo
                           ? funcionario.tipo_custo === 'mensal'
                             ? 'Mensal'
-                            : 'Diaria'
+                            : 'Diária'
                           : '—'}
                       </span>
                     </td>

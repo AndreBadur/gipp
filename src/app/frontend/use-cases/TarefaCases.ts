@@ -518,7 +518,7 @@ export async function lancamentoDaTarefa(
     resultado = await atualizarInsumoPorId(
       insumo.id_recurso.toString(),
       insumoValores?.nome ?? '',
-      insumo.quantidade - (insumoValores?.quantidade ?? 0),
+      (insumoValores?.quantidade ?? 0) - insumo.quantidade,
       insumoValores?.custo ?? 0,
       insumoValores?.unidade_medida ?? '',
       idPropriedade,
@@ -528,7 +528,7 @@ export async function lancamentoDaTarefa(
   const totalValor = valores?.custoTotal
   resultado = await criarLancamento(
     totalValor ?? 0,
-    'entrada',
+    'saida',
     new Date(),
     idPropriedade ?? 0,
     centroCusto

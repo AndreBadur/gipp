@@ -1,7 +1,9 @@
+import MaquinariosTableDaPropriedade from '@/components/project/MaquinarioTableDaPropriedade'
+
 export default function Page() {
   return (
-    <div className="flex justify-center items-center w-full h-screen">
-      MAQUINARIOS DA PROPRIEDADE
+    <div className="flex justify-center items-start w-full h-full">
+      <MaquinariosTableDaPropriedade />
     </div>
   )
 }

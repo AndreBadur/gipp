@@ -68,7 +68,7 @@ export default function CadastroDeTarefaForm({
   const [prioridade, setPrioridade] = useState<
     'baixa' | 'media' | 'alta' | 'urgente'
   >()
-  const dataInicioFormatada = new Date(dataInicio).toISOString().split('T')[0]
+  const [dataInicioValue, setDataInicioValue] = useState('')
   const [areas, setAreas] = useState<IListaAreasResponse | undefined>(undefined)
   const listaAreas = areas?.data.dataConnection
   const [areasDaTarefa, setAreasDaTarefa] = useState<number[]>([])
@@ -269,6 +269,13 @@ export default function CadastroDeTarefaForm({
     )
     setAreasDaTarefa(novasAreas)
   }, [idTarefa, listaAreasDaTarefaResponse, areasDaTarefaResponseNormalizadas])
+
+  useEffect(() => {
+    if (dataInicio) {
+      const formatada = new Date(dataInicio).toISOString().split('T')[0]
+      setDataInicioValue(formatada)
+    }
+  }, [dataInicio])
 
   useEffect(() => {
     if (!idTarefa) return
@@ -665,7 +672,8 @@ export default function CadastroDeTarefaForm({
                 type="date"
                 id="dataInicio"
                 name="dataInicio"
-                value={dataInicioFormatada}
+                value={dataInicioValue}
+                onChange={(e) => setDataInicioValue(e.target.value)}
                 required
               />
             </div>

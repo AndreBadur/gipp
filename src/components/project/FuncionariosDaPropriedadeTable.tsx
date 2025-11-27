@@ -101,8 +101,20 @@ export default function FuncionariosDaPropriedadeTable() {
                         ? currencyFormatter.format(Number(funcionario.custo))
                         : '—'}
                     </td>
-                    <td className="px-4 py-3 capitalize text-foreground/80">
-                      {funcionario.tipo_custo ?? '—'}
+                    <td className="px-4 py-3">
+                      <span
+                        className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold ${
+                          funcionario.tipo_custo === 'mensal'
+                            ? 'bg-blue-500/20 text-blue-200'
+                            : 'bg-purple-500/20 text-purple-200'
+                        }`}
+                      >
+                        {funcionario.tipo_custo
+                          ? funcionario.tipo_custo === 'mensal'
+                            ? 'Mensal'
+                            : 'Diária'
+                          : '—'}
+                      </span>
                     </td>
                   </tr>
                 ))}

@@ -1,7 +1,9 @@
+import FornecedoresTable from '@/components/project/FornecedoresTable'
+
 export default function Page() {
   return (
-    <div className="flex justify-center items-center w-full h-screen">
-      FORNECEDORES
-    </div>
+    <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-4">
+      <FornecedoresTable />
+    </main>
   )
 }

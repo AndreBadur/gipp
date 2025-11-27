@@ -29,9 +29,7 @@ export default function CadastroDeMaquinarioForm({
   const [ultimaManutencao, setUltimaManutencao] = useState<Date>(new Date())
   const [alugado, setAlugado] = useState<boolean>(false)
   const [propriedade, setPropriedade] = useState<number>()
-  const ultimaManutencaoFormatada = new Date(ultimaManutencao)
-    .toISOString()
-    .split('T')[0]
+  const [ultimaManutencaoValue, setUltimaManutencaoValue] = useState('')
   const [toast, setToast] = useState<{
     title: string
     description?: string
@@ -72,6 +70,13 @@ export default function CadastroDeMaquinarioForm({
     setPropriedade(propriedadeSelecionadaId ?? propriedades[0]?.id)
   }, [propriedade, propriedades, propriedadeSelecionadaId])
 
+  useEffect(() => {
+    if (ultimaManutencao) {
+      const formatada = new Date(ultimaManutencao).toISOString().split('T')[0]
+      setUltimaManutencaoValue(formatada)
+    }
+  }, [ultimaManutencao])
+
   async function salvar(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
@@ -80,6 +85,7 @@ export default function CadastroDeMaquinarioForm({
     const anoFabricacao = formData.get('anoFabricacao') as string
     const custo = formData.get('custo') as string
     const tipoCusto = formData.get('tipoCusto') as tipo_custo
+    const ultimaManutencao = formData.get('ultimaManutencao') as string
 
     let alugado: boolean = false
     const checkboxAlugado = formData.get('alugado') as string
@@ -258,7 +264,8 @@ export default function CadastroDeMaquinarioForm({
                 type="date"
                 id="ultimaManutencao"
                 name="ultimaManutencao"
-                defaultValue={ultimaManutencaoFormatada}
+                value={ultimaManutencaoValue}
+                onChange={(e) => setUltimaManutencaoValue(e.target.value)}
               />
             </div>
             <div>

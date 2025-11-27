@@ -1,7 +1,9 @@
+import CentrosCustoTable from '@/components/project/CentrosCustoTable'
+
 export default function Page() {
   return (
-    <div className="flex justify-center items-center w-full h-screen">
-      CENTRO DE CUSTO
-    </div>
+    <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-4">
+      <CentrosCustoTable />
+    </main>
   )
 }
