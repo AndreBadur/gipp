@@ -37,9 +37,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="min-h-screen bg-background">
-            <main className="pt-1">{children}</main>
-            <div className="flex fixed bottom-4 right-4 z-50">
+          <div className="h-screen bg-background">
+            <main>{children}</main>
+            <div className="fixed bottom-4 right-4 z-1">
               <ModeToggle />
             </div>
           </div>

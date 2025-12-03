@@ -6,7 +6,7 @@ import Header from '@/components/project/Header'
 
 export default function Home() {
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col justify-center items-center relative overflow-hidden">
+    <div className="min-h-screen flex flex-col justify-center items-center relative overflow-hidden">
       <Header showAuth={true} />
       <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 via-background to-blue-50/30 dark:from-orange-950/20 dark:via-background dark:to-blue-950/20"></div>
       <div className="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-primary/20 to-orange-300/20 rounded-full blur-3xl animate-pulse"></div>

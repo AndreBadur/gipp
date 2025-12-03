@@ -56,6 +56,7 @@ export default async function Layout({
         { label: 'Maquinários', href: '/proprietario/propriedade/maquinarios' },
         { label: 'Produtos', href: '/proprietario/propriedade/produtos' },
         { label: 'Tarefas', href: '/proprietario/propriedade/tarefas' },
+        { label: 'Assistente GIPP', href: '/proprietario/propriedade/chat' },
       ],
     },
   ]

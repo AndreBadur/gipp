@@ -84,9 +84,6 @@ export default function ProprietarioHeader({
             <p className="text-xs uppercase tracking-wide text-muted-foreground">
               Painel do proprietário
             </p>
-            <h1 className="text-lg font-semibold text-foreground">
-              Olá, {displayName.split(' ')[0]}
-            </h1>
           </div>
         </div>
         <div className="flex flex-col gap-3 md:flex-row md:items-center">
@@ -121,7 +118,6 @@ export default function ProprietarioHeader({
           </div>
           <div className="hidden text-right text-xs md:block">
             <p className="font-semibold text-foreground">{displayName}</p>
-            <p className="text-muted-foreground">{userEmail}</p>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

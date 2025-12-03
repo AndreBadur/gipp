@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { redirect, usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { ChevronDown, X } from 'lucide-react'
@@ -24,20 +24,24 @@ export default function ProprietarioSidebar({
   isOpen,
   onClose,
 }: ProprietarioSidebarProps) {
+  function homePage() {
+    redirect('/proprietario')
+  }
   const pathname = usePathname()
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>(() =>
-    items.reduce((acc, item) => {
-      if (item.children?.length) {
-        const key = item.href ?? item.label
-        const isActive =
-          (item.href && pathname.startsWith(item.href)) ||
-          item.children.some((child) =>
-            child.href ? pathname.startsWith(child.href) : false
-          )
-        acc[key] = isActive
-      }
-      return acc
-    }, {} as Record<string, boolean>)
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>(
+    () =>
+      items.reduce((acc, item) => {
+        if (item.children?.length) {
+          const key = item.href ?? item.label
+          const isActive =
+            (item.href && pathname.startsWith(item.href)) ||
+            item.children.some((child) =>
+              child.href ? pathname.startsWith(child.href) : false
+            )
+          acc[key] = isActive
+        }
+        return acc
+      }, {} as Record<string, boolean>)
   )
 
   useEffect(() => {
@@ -92,8 +96,8 @@ export default function ProprietarioSidebar({
             className={cn(
               'flex w-full items-center justify-between rounded-md px-3 py-2 text-left transition-colors',
               isActive
-                ? 'bg-white/10 text-white'
-                : 'text-foreground/70 hover:bg-white/5 hover:text-foreground'
+                ? 'bg-secondary text-secondary-foreground shadow-sm'
+                : 'text-foreground/70 hover:bg-secondary/70 hover:text-foreground'
             )}
             onClick={() => toggleSection(key)}
           >
@@ -134,8 +138,8 @@ export default function ProprietarioSidebar({
         className={cn(
           'flex items-center rounded-md px-3 py-2 transition-colors',
           isActive
-            ? 'bg-white/10 text-white'
-            : 'text-foreground/70 hover:bg-white/5 hover:text-foreground',
+            ? 'bg-secondary text-secondary-foreground shadow-sm'
+            : 'text-foreground/70 hover:bg-secondary/70 hover:text-foreground',
           depth > 0 && 'text-sm text-foreground/60'
         )}
         onClick={onClose}
@@ -157,6 +161,14 @@ export default function ProprietarioSidebar({
         )}
         aria-label="Navegação do proprietário"
       >
+        <Button
+          variant="logo"
+          size="lg"
+          onClick={homePage}
+          className="font-black text-4xl md:text-6xl lg:text-6xl h-auto p-4 hover:scale-105 transition-transform"
+        >
+          G.I.P.P.
+        </Button>
         <div className="mb-6 flex items-center justify-between md:hidden">
           <h2 className="text-lg font-semibold text-foreground">Menu</h2>
           <Button

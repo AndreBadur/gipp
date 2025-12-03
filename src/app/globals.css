@@ -3,19 +3,19 @@
 :root {
   /* Tema Laranja/Azul - Light Mode */
   --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
+  --foreground: 222.2 47.4% 10%; /* slightly deeper for better contrast */
   --card: 0 0% 100%;
   --card-foreground: 222.2 84% 4.9%;
   --popover: 0 0% 100%;
   --popover-foreground: 222.2 84% 4.9%;
   --primary: 20.5 90.2% 48.2%; /* orange-500 */
   --primary-foreground: 0 0% 98%;
-  --secondary: 210 40% 96%; /* slate-100 */
-  --secondary-foreground: 222.2 84% 4.9%;
-  --muted: 210 40% 98%; /* slate-50 */
-  --muted-foreground: 215.4 16.3% 46.9%; /* slate-500 */
-  --accent: 214.3 31.8% 91.4%; /* blue-100 */
-  --accent-foreground: 213.1 93.9% 67.8%; /* blue-500 */
+  --secondary: 210 40% 92%; /* slightly darker for selected states */
+  --secondary-foreground: 222.2 47.4% 10%;
+  --muted: 210 40% 96%; /* tone down near-white */
+  --muted-foreground: 215.4 23% 35%; /* more contrast */
+  --accent: 214.3 31.8% 88%; /* avoid pure white on active/hover */
+  --accent-foreground: 213.1 93.9% 60%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 0 0% 98%;
   --border: 214.3 31.8% 91.4%;
@@ -29,14 +29,14 @@
   --btn-destructive: 0 84.2% 60.2%; /* red-500 */
   --btn-destructive-hover: 0 93.3% 67.8%; /* red-600 */
   --btn-outline-border: 220 13% 91%; /* slate-200 */
-  --btn-outline-bg: 0 0% 100%; /* white */
-  --btn-outline-hover: 210 40% 98%; /* slate-50 */
-  --btn-outline-text: 222.2 84% 4.9%; /* slate-900 */
-  --btn-secondary: 210 40% 96%; /* slate-100 */
-  --btn-secondary-hover: 210 40% 94%; /* slate-150 */
-  --btn-secondary-text: 222.2 84% 4.9%; /* slate-900 */
-  --btn-ghost-hover: 210 40% 96%; /* slate-100 */
-  --btn-ghost-text: 222.2 84% 4.9%; /* slate-900 */
+  --btn-outline-bg: 210 40% 97%; /* light slate to avoid white flash */
+  --btn-outline-hover: 210 40% 94%; /* subtle hover */
+  --btn-outline-text: 222.2 47.4% 10%;
+  --btn-secondary: 210 40% 92%; /* avoid pure white when selected */
+  --btn-secondary-hover: 210 40% 90%; /* slightly darker on hover */
+  --btn-secondary-text: 222.2 47.4% 10%;
+  --btn-ghost-hover: 210 40% 94%;
+  --btn-ghost-text: 222.2 47.4% 10%;
   --btn-link: 20.5 90.2% 48.2%; /* orange-500 */
   --btn-confirm: 142.1 76.2% 36.3%; /* green-600 */
   --btn-confirm-hover: 142.1 70.6% 45.3%; /* green-500 */
