@@ -1,6 +1,40 @@
 import prisma from '@/lib/prisma'
 import { isDataNullOrUndefined } from '../utils/verifications'
 
+const INSUMO_CACHE_TTL_MS = 60_000
+
+type InsumoCacheEntry = {
+  dataConnection: unknown
+  expiresAt: number
+}
+
+const insumoCache = new Map<number, InsumoCacheEntry>()
+
+const getCachedInsumos = (idPropriedade: number) => {
+  const cached = insumoCache.get(idPropriedade)
+
+  if (!cached) return null
+
+  const isExpired = Date.now() > cached.expiresAt
+  if (isExpired) {
+    insumoCache.delete(idPropriedade)
+    return null
+  }
+
+  return cached.dataConnection
+}
+
+const setCachedInsumos = (idPropriedade: number, dataConnection: unknown) => {
+  insumoCache.set(idPropriedade, {
+    dataConnection,
+    expiresAt: Date.now() + INSUMO_CACHE_TTL_MS,
+  })
+}
+
+const clearInsumoCache = () => {
+  insumoCache.clear()
+}
+
 export interface IInsumo {
   id?: number
   nome: string
@@ -34,6 +68,7 @@ export class InsumoService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    clearInsumoCache()
     return { dataConnection, status: 201 }
   }
 
@@ -53,10 +88,16 @@ export class InsumoService {
 
   async buscarTodosInsumos(data: IInsumo) {
     const { id_propriedade } = data
+    const propriedadeId = Number(id_propriedade)
+
+    const cachedData = getCachedInsumos(propriedadeId)
+    if (cachedData) {
+      return { dataConnection: cachedData, status: 200 }
+    }
 
     const dataConnection = await prisma.insumo.findMany({
       where: {
-        id_propriedade: Number(id_propriedade),
+        id_propriedade: propriedadeId,
       },
       orderBy: {
         nome: 'asc',
@@ -64,6 +105,7 @@ export class InsumoService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    setCachedInsumos(propriedadeId, dataConnection)
     return { dataConnection, status: 200 }
   }
 
@@ -93,6 +135,7 @@ export class InsumoService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    clearInsumoCache()
     return { dataConnection, status: 201 }
   }
 
@@ -106,6 +149,7 @@ export class InsumoService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    clearInsumoCache()
     return { dataConnection, status: 201 }
   }
 }

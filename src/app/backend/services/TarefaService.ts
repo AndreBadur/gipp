@@ -1,6 +1,40 @@
 import prisma from '@/lib/prisma'
 import { isDataNullOrUndefined } from '../utils/verifications'
 
+const TAREFA_CACHE_TTL_MS = 60_000
+
+type TarefaCacheEntry = {
+  dataConnection: unknown
+  expiresAt: number
+}
+
+const tarefaCache = new Map<string, TarefaCacheEntry>()
+
+const getCachedTarefa = (cacheKey: string) => {
+  const cached = tarefaCache.get(cacheKey)
+
+  if (!cached) return null
+
+  const isExpired = Date.now() > cached.expiresAt
+  if (isExpired) {
+    tarefaCache.delete(cacheKey)
+    return null
+  }
+
+  return cached.dataConnection
+}
+
+const setCachedTarefa = (cacheKey: string, dataConnection: unknown) => {
+  tarefaCache.set(cacheKey, {
+    dataConnection,
+    expiresAt: Date.now() + TAREFA_CACHE_TTL_MS,
+  })
+}
+
+const clearTarefaCache = () => {
+  tarefaCache.clear()
+}
+
 export interface ITarefa {
   id?: number
   titulo: string
@@ -58,6 +92,7 @@ export class TarefaService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    clearTarefaCache()
     return { dataConnection, status: 201 }
   }
 
@@ -77,6 +112,12 @@ export class TarefaService {
 
   async buscarTodasTarefas(data: ITarefa) {
     const { id_propriedade } = data
+    const cacheKey = `tarefas:${Number(id_propriedade)}`
+
+    const cachedData = getCachedTarefa(cacheKey)
+    if (cachedData) {
+      return { dataConnection: cachedData, status: 200 }
+    }
 
     const dataConnection = await prisma.tarefa.findMany({
       where: {
@@ -88,6 +129,7 @@ export class TarefaService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    setCachedTarefa(cacheKey, dataConnection)
     return { dataConnection, status: 200 }
   }
 
@@ -123,6 +165,7 @@ export class TarefaService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    clearTarefaCache()
     return { dataConnection, status: 201 }
   }
 
@@ -136,6 +179,7 @@ export class TarefaService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    clearTarefaCache()
     return { dataConnection, status: 201 }
   }
 
@@ -145,11 +189,18 @@ export class TarefaService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    clearTarefaCache()
     return { dataConnection, status: 201 }
   }
 
   async listarAreasDaTarefa(data: IAreaTarefa) {
     const { id_tarefa } = data
+    const cacheKey = `areas:${Number(id_tarefa)}`
+
+    const cachedData = getCachedTarefa(cacheKey)
+    if (cachedData) {
+      return { dataConnection: cachedData, status: 200 }
+    }
 
     const dataConnection = await prisma.area_tarefa.findMany({
       where: {
@@ -158,6 +209,7 @@ export class TarefaService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    setCachedTarefa(cacheKey, dataConnection)
     return { dataConnection, status: 200 }
   }
 
@@ -172,6 +224,7 @@ export class TarefaService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    clearTarefaCache()
     return { dataConnection, status: 201 }
   }
 
@@ -181,11 +234,18 @@ export class TarefaService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    clearTarefaCache()
     return { dataConnection, status: 201 }
   }
 
   async listarRecursosDaTarefa(data: IRecursoTarefa) {
     const { id_tarefa } = data
+    const cacheKey = `recursos:${Number(id_tarefa)}`
+
+    const cachedData = getCachedTarefa(cacheKey)
+    if (cachedData) {
+      return { dataConnection: cachedData, status: 200 }
+    }
 
     const dataConnection = await prisma.recurso_tarefa.findMany({
       where: {
@@ -194,6 +254,7 @@ export class TarefaService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    setCachedTarefa(cacheKey, dataConnection)
     return { dataConnection, status: 201 }
   }
 
@@ -208,6 +269,7 @@ export class TarefaService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    clearTarefaCache()
     return { dataConnection, status: 201 }
   }
 }

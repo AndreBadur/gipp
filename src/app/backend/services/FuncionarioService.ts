@@ -2,6 +2,40 @@ import prisma from '@/lib/prisma'
 import { tipo_custo_funcionario } from '@/generated/prisma'
 import { isDataNullOrUndefined } from '../utils/verifications'
 
+const FUNCIONARIO_CACHE_TTL_MS = 60_000
+
+type FuncionarioCacheEntry = {
+  dataConnection: unknown
+  expiresAt: number
+}
+
+const funcionarioCache = new Map<string, FuncionarioCacheEntry>()
+
+const getCachedFuncionario = (cacheKey: string) => {
+  const cached = funcionarioCache.get(cacheKey)
+
+  if (!cached) return null
+
+  const isExpired = Date.now() > cached.expiresAt
+  if (isExpired) {
+    funcionarioCache.delete(cacheKey)
+    return null
+  }
+
+  return cached.dataConnection
+}
+
+const setCachedFuncionario = (cacheKey: string, dataConnection: unknown) => {
+  funcionarioCache.set(cacheKey, {
+    dataConnection,
+    expiresAt: Date.now() + FUNCIONARIO_CACHE_TTL_MS,
+  })
+}
+
+const clearFuncionarioCache = () => {
+  funcionarioCache.clear()
+}
+
 export interface IFuncionario {
   id?: number
   nome: string
@@ -47,6 +81,7 @@ export class FuncionarioService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    clearFuncionarioCache()
     return { dataConnection, status: 201 }
   }
 
@@ -66,6 +101,12 @@ export class FuncionarioService {
 
   async buscarTodosFuncionariosDaPropriedade(data: IFuncionario) {
     const { id_propriedade, id_proprietario } = data
+    const cacheKey = `propriedade:${Number(id_proprietario)}:${Number(id_propriedade)}`
+
+    const cachedData = getCachedFuncionario(cacheKey)
+    if (cachedData) {
+      return { dataConnection: cachedData, status: 200 }
+    }
 
     const dataConnection = await prisma.funcionario.findMany({
       where: {
@@ -78,11 +119,18 @@ export class FuncionarioService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    setCachedFuncionario(cacheKey, dataConnection)
     return { dataConnection, status: 200 }
   }
 
   async buscarTodosFuncionariosDoProprietario(data: IFuncionario) {
     const { id_proprietario } = data
+    const cacheKey = `proprietario:${Number(id_proprietario)}`
+
+    const cachedData = getCachedFuncionario(cacheKey)
+    if (cachedData) {
+      return { dataConnection: cachedData, status: 200 }
+    }
 
     const dataConnection = await prisma.funcionario.findMany({
       where: {
@@ -94,6 +142,7 @@ export class FuncionarioService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    setCachedFuncionario(cacheKey, dataConnection)
     return { dataConnection, status: 200 }
   }
 
@@ -131,6 +180,7 @@ export class FuncionarioService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    clearFuncionarioCache()
     return { dataConnection, status: 201 }
   }
 
@@ -144,6 +194,7 @@ export class FuncionarioService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    clearFuncionarioCache()
     return { dataConnection, status: 201 }
   }
 }

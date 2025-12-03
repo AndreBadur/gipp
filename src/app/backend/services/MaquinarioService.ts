@@ -1,6 +1,40 @@
 import prisma from '@/lib/prisma'
 import { isDataNullOrUndefined } from '../utils/verifications'
 
+const MAQUINARIO_CACHE_TTL_MS = 60_000
+
+type MaquinarioCacheEntry = {
+  dataConnection: unknown
+  expiresAt: number
+}
+
+const maquinarioCache = new Map<string, MaquinarioCacheEntry>()
+
+const getCachedMaquinario = (cacheKey: string) => {
+  const cached = maquinarioCache.get(cacheKey)
+
+  if (!cached) return null
+
+  const isExpired = Date.now() > cached.expiresAt
+  if (isExpired) {
+    maquinarioCache.delete(cacheKey)
+    return null
+  }
+
+  return cached.dataConnection
+}
+
+const setCachedMaquinario = (cacheKey: string, dataConnection: unknown) => {
+  maquinarioCache.set(cacheKey, {
+    dataConnection,
+    expiresAt: Date.now() + MAQUINARIO_CACHE_TTL_MS,
+  })
+}
+
+const clearMaquinarioCache = () => {
+  maquinarioCache.clear()
+}
+
 export interface IMaquinario {
   id?: number
   modelo: string
@@ -40,6 +74,7 @@ export class MaquinarioService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    clearMaquinarioCache()
     return { dataConnection, status: 201 }
   }
 
@@ -59,6 +94,12 @@ export class MaquinarioService {
 
   async buscarTodosMaquinarios(data: IMaquinario) {
     const { id_proprietario } = data
+    const cacheKey = `proprietario:${Number(id_proprietario)}`
+
+    const cachedData = getCachedMaquinario(cacheKey)
+    if (cachedData) {
+      return { dataConnection: cachedData, status: 200 }
+    }
 
     const dataConnection = await prisma.maquinario.findMany({
       where: {
@@ -70,6 +111,7 @@ export class MaquinarioService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    setCachedMaquinario(cacheKey, dataConnection)
     return { dataConnection, status: 200 }
   }
 
@@ -103,6 +145,7 @@ export class MaquinarioService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    clearMaquinarioCache()
     return { dataConnection, status: 201 }
   }
 
@@ -116,11 +159,18 @@ export class MaquinarioService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    clearMaquinarioCache()
     return { dataConnection, status: 201 }
   }
 
   async buscarMaquinariosDaPropriedade(data: IMaquinario) {
     const { id_proprietario, id_propriedade } = data
+    const cacheKey = `propriedade:${Number(id_proprietario)}:${Number(id_propriedade)}`
+
+    const cachedData = getCachedMaquinario(cacheKey)
+    if (cachedData) {
+      return { dataConnection: cachedData, status: 200 }
+    }
 
     const dataConnection = await prisma.maquinario.findMany({
       where: {
@@ -130,6 +180,7 @@ export class MaquinarioService {
     })
 
     isDataNullOrUndefined(dataConnection)
+    setCachedMaquinario(cacheKey, dataConnection)
     return { dataConnection, status: 200 }
   }
 }
