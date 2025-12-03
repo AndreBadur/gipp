@@ -44,7 +44,6 @@ const handler = NextAuth({
             email: res.data.dataConnection.email,
           }
         }
-        console.log('estou fora do if')
         return null
       },
     }),

@@ -1,7 +1,5 @@
 import { buscarTodasPropriedades } from '@/app/frontend/use-cases/PropriedadeCases'
-import { PrismaClient } from '@/generated/prisma'
-
-const prisma = new PrismaClient()
+import prisma from '@/lib/prisma'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export async function executeTool(name: string, args: any) {
   switch (name) {

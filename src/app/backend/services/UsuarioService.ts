@@ -1,7 +1,5 @@
 import { isDataNullOrUndefined } from '../utils/verifications'
-import { PrismaClient } from '@/generated/prisma'
-
-const prisma = new PrismaClient()
+import prisma from '@/lib/prisma'
 
 export interface IUsuario {
   id: number

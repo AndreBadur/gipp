@@ -1,7 +1,5 @@
-import { PrismaClient } from '@/generated/prisma'
+import prisma from '@/lib/prisma'
 import { isDataNullOrUndefined } from '../utils/verifications'
-
-const prisma = new PrismaClient()
 
 export interface ITarefa {
   id?: number

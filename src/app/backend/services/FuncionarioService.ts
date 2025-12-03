@@ -1,7 +1,6 @@
-import { PrismaClient, tipo_custo_funcionario } from '@/generated/prisma'
+import prisma from '@/lib/prisma'
+import { tipo_custo_funcionario } from '@/generated/prisma'
 import { isDataNullOrUndefined } from '../utils/verifications'
-
-const prisma = new PrismaClient()
 
 export interface IFuncionario {
   id?: number
